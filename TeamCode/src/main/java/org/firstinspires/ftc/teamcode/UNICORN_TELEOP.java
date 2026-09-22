@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.teamcode;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,11 +12,19 @@ public class UNICORN_TELEOP extends LinearOpMode {
     // Timer
     private ElapsedTime runtime = new ElapsedTime();
 
-    // Declare the four drive motors
+    // Drive motors
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
+
+    // Intake and outtake motors
+    private DcMotor intakeMotor = null;
+    private DcMotor outtakeMotor = null;
+
+    // Intake toggle variables
+    private boolean intakeOn = false;
+    private boolean previousLeftBumper = false;
 
     @Override
     public void runOpMode() {
@@ -25,54 +32,118 @@ public class UNICORN_TELEOP extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        // Connect the Java variables to the motors
-        // These names MUST match the names in the robot configuration.
+        // --------------------
+        // HARDWARE SETUP
+        // --------------------
+
+        // Drive motors
         leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
 
-        // Motors on opposite sides of the robot face opposite directions.
+        // Intake and outtake
+        intakeMotor = hardwareMap.get(DcMotor.class, "intake_motor");
+        outtakeMotor = hardwareMap.get(DcMotor.class, "outtake_motor");
+
+        // Drive motor directions
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        // Wait until the driver presses START
+        // Wait for START
         waitForStart();
         runtime.reset();
 
-        // Keep running until STOP is pressed
+        // --------------------
+        // MAIN TELEOP LOOP
+        // --------------------
+
         while (opModeIsActive()) {
 
-            double leftPower;
-            double rightPower;
+            // ====================
+            // DRIVING
+            // ====================
 
-            // Left stick controls forward/backward movement
             double drive = -gamepad1.left_stick_y;
-
-            // Right stick controls turning
             double turn = gamepad1.right_stick_x;
 
-            // Calculate power for each side
-            leftPower = Range.clip(drive + turn, -1.0, 1.0);
-            rightPower = Range.clip(drive - turn, -1.0, 1.0);
+            double leftPower =
+                    Range.clip(drive + turn, -1.0, 1.0);
 
-            // Both motors on the left get the same power
+            double rightPower =
+                    Range.clip(drive - turn, -1.0, 1.0);
+
             leftFrontDrive.setPower(leftPower);
             leftBackDrive.setPower(leftPower);
 
-            // Both motors on the right get the same power
             rightFrontDrive.setPower(rightPower);
             rightBackDrive.setPower(rightPower);
 
-            // Display useful information on the Driver Station
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Left Power", "%.2f", leftPower);
-            telemetry.addData("Right Power", "%.2f", rightPower);
+
+            // ====================
+            // INTAKE
+            // Left bumper = toggle
+            // ====================
+
+            boolean currentLeftBumper = gamepad1.left_bumper;
+
+            // Only toggle when the button changes
+            // from NOT pressed to pressed
+            if (currentLeftBumper && !previousLeftBumper) {
+                intakeOn = !intakeOn;
+            }
+
+            previousLeftBumper = currentLeftBumper;
+
+            if (intakeOn) {
+                intakeMotor.setPower(1.0);
+            } else {
+                intakeMotor.setPower(0.0);
+            }
+
+
+            // ====================
+            // OUTTAKE
+            // Hold right trigger
+            // ====================
+
+            if (gamepad1.right_trigger > 0.1) {
+                outtakeMotor.setPower(1.0);
+            } else {
+                outtakeMotor.setPower(0.0);
+            }
+
+
+            // ====================
+            // TELEMETRY
+            // ====================
+
+            telemetry.addData(
+                    "Status",
+                    "Run Time: " + runtime.toString()
+            );
+
+            telemetry.addData(
+                    "Drive",
+                    "Left: %.2f | Right: %.2f",
+                    leftPower,
+                    rightPower
+            );
+
+            telemetry.addData(
+                    "Intake",
+                    intakeOn ? "ON" : "OFF"
+            );
+
+            telemetry.addData(
+                    "Outtake",
+                    gamepad1.right_trigger > 0.1 ? "ON" : "OFF"
+            );
+
             telemetry.update();
         }
     }
 }
-

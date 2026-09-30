@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -18,9 +19,8 @@ public class UNICORN_TELEOP extends LinearOpMode {
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
 
-    // Intake and outtake motors
-    private DcMotor intakeMotor = null;
-    private DcMotor outtakeMotor = null;
+    // Intake / Outtake continuous rotation servo
+    private CRServo intakeServo = null;
 
     // Intake toggle variables
     private boolean intakeOn = false;
@@ -29,33 +29,45 @@ public class UNICORN_TELEOP extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-
         // --------------------
         // HARDWARE SETUP
         // --------------------
 
-        // Drive motors
-        leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
-        leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        leftFrontDrive =
+                hardwareMap.get(DcMotor.class, "left_front_drive");
 
-        // Intake and outtake
-        intakeMotor = hardwareMap.get(DcMotor.class, "intake_motor");
-        outtakeMotor = hardwareMap.get(DcMotor.class, "outtake_motor");
+        leftBackDrive =
+                hardwareMap.get(DcMotor.class, "left_back_drive");
 
-        // Drive motor directions
+        rightFrontDrive =
+                hardwareMap.get(DcMotor.class, "right_front_drive");
+
+        rightBackDrive =
+                hardwareMap.get(DcMotor.class, "right_back_drive");
+
+        // Dual-mode servo in continuous rotation mode
+        intakeServo =
+                hardwareMap.get(CRServo.class, "intake_servo");
+
+
+        // --------------------
+        // MOTOR DIRECTIONS
+        // --------------------
+
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
+
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
         // Wait for START
         waitForStart();
         runtime.reset();
+
 
         // --------------------
         // MAIN TELEOP LOOP
@@ -84,36 +96,39 @@ public class UNICORN_TELEOP extends LinearOpMode {
 
 
             // ====================
-            // INTAKE
-            // Left bumper = toggle
+            // INTAKE TOGGLE
+            // Left bumper
             // ====================
 
             boolean currentLeftBumper = gamepad1.left_bumper;
 
-            // Only toggle when the button changes
-            // from NOT pressed to pressed
+            // Detect a NEW bumper press
             if (currentLeftBumper && !previousLeftBumper) {
                 intakeOn = !intakeOn;
             }
 
             previousLeftBumper = currentLeftBumper;
 
-            if (intakeOn) {
-                intakeMotor.setPower(1.0);
-            } else {
-                intakeMotor.setPower(0.0);
-            }
-
 
             // ====================
-            // OUTTAKE
-            // Hold right trigger
+            // INTAKE / OUTTAKE SERVO
             // ====================
 
             if (gamepad1.right_trigger > 0.1) {
-                outtakeMotor.setPower(1.0);
+
+                // OUTTAKE
+                // Right trigger overrides intake
+                intakeServo.setPower(-1.0);
+
+            } else if (intakeOn) {
+
+                // INTAKE
+                intakeServo.setPower(1.0);
+
             } else {
-                outtakeMotor.setPower(0.0);
+
+                // STOP
+                intakeServo.setPower(0.0);
             }
 
 
@@ -134,14 +149,17 @@ public class UNICORN_TELEOP extends LinearOpMode {
             );
 
             telemetry.addData(
-                    "Intake",
+                    "Intake Toggle",
                     intakeOn ? "ON" : "OFF"
             );
 
-            telemetry.addData(
-                    "Outtake",
-                    gamepad1.right_trigger > 0.1 ? "ON" : "OFF"
-            );
+            if (gamepad1.right_trigger > 0.1) {
+                telemetry.addData("Servo", "OUTTAKE");
+            } else if (intakeOn) {
+                telemetry.addData("Servo", "INTAKE");
+            } else {
+                telemetry.addData("Servo", "STOPPED");
+            }
 
             telemetry.update();
         }

@@ -32,8 +32,6 @@ public class UNICORN_TELEOP extends LinearOpMode {
     private CRServo leftIntakeServo = null;
     private CRServo rightIntakeServo = null;
 
-    // CR servo that moves balls farther inside the robot
-    private CRServo intermediateServo = null;
 
     // Motor used for the final outtake
     private DcMotor outtakeMotor = null;
@@ -73,12 +71,6 @@ public class UNICORN_TELEOP extends LinearOpMode {
 
         rightIntakeServo =
                 hardwareMap.get(CRServo.class, "right_intake_servo");
-
-
-        // Intermediate CR servo
-        intermediateServo =
-                hardwareMap.get(CRServo.class, "intermediate_servo");
-
 
         // Outtake motor
         outtakeMotor =
@@ -167,22 +159,6 @@ public class UNICORN_TELEOP extends LinearOpMode {
 
 
             // =====================================
-            // INTERMEDIATE SERVO
-            //
-            // HOLD RIGHT BUMPER
-            // =====================================
-
-            if (gamepad1.right_bumper) {
-
-                intermediateServo.setPower(1.0);
-
-            } else {
-
-                intermediateServo.setPower(0.0);
-            }
-
-
-            // =====================================
             // OUTTAKE MOTOR
             //
             // HOLD RIGHT TRIGGER
@@ -217,11 +193,6 @@ public class UNICORN_TELEOP extends LinearOpMode {
             telemetry.addData(
                     "Intake",
                     intakeOn ? "ON" : "OFF"
-            );
-
-            telemetry.addData(
-                    "Intermediate",
-                    gamepad1.right_bumper ? "ON" : "OFF"
             );
 
             telemetry.addData(

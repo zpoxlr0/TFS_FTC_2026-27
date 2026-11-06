@@ -31,7 +31,7 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
             double turn = gamepad1.left_stick_x;
             double strafe = gamepad1.right_stick_x;
 
-            board.drive(forward, strafe, turn);
+            board.drive(forward, turn, strafe);
 
 
             // Intake

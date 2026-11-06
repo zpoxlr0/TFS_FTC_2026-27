@@ -45,6 +45,9 @@ public class ProgrammingBoard {
         transferMotor =
                 hardwareMap.get(DcMotor.class, "transfer_motor");
 
+        // EXPERIMENTAL CHANGE! DISABLE IF NEEDED.
+        outtakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
@@ -76,7 +79,7 @@ public class ProgrammingBoard {
     }
 
     public void setOuttake(boolean outtakeOn) {
-        outtakeMotor.setPower(outtakeOn ? 0.8 : 0.0);
+        outtakeMotor.setPower(outtakeOn ? 0.7 : 0.0);
     }
 
     public void setTransfer(boolean transferOn) {

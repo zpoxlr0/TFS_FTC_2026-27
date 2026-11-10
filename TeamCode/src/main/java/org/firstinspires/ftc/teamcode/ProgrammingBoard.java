@@ -1,11 +1,25 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.IMU;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class ProgrammingBoard {
+
+    // Replace null after identifying the direction the broad REV-logo face points.
+    public static final RevHubOrientationOnRobot.LogoFacingDirection
+            HUB_LOGO_FACING =
+            RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
+
+    // You confirmed that the USB ports face forward.
+    public static final RevHubOrientationOnRobot.UsbFacingDirection
+            HUB_USB_FACING =
+            RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
+    private Stampede stampede;
 
     // Drivetrain
     private DcMotor leftFrontDrive;
@@ -45,6 +59,7 @@ public class ProgrammingBoard {
         transferMotor =
                 hardwareMap.get(DcMotor.class, "transfer_motor");
 
+        // Preserved from your original ProgrammingBoard.
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
@@ -54,17 +69,61 @@ public class ProgrammingBoard {
         outtakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
         stop();
+
+        // RUN_WITHOUT_ENCODER still lets us read encoder positions.
+        // It preserves direct power control without adding velocity PID tuning.
+        for (DcMotor motor : new DcMotor[]{
+                leftFrontDrive,
+                leftBackDrive,
+                rightFrontDrive,
+                rightBackDrive
+        }) {
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+
+        IMU imu = null;
+
+        if (HUB_LOGO_FACING != null) {
+            imu = hardwareMap.get(IMU.class, "imu");
+
+            imu.initialize(new IMU.Parameters(
+                    new RevHubOrientationOnRobot(
+                            HUB_LOGO_FACING,
+                            HUB_USB_FACING
+                    )
+            ));
+        }
+
+        // Stampede reads the motors already owned by ProgrammingBoard.
+        stampede = new Stampede(
+                leftFrontDrive,
+                leftBackDrive,
+                rightFrontDrive,
+                rightBackDrive,
+                imu
+        );
     }
 
-    public void drive(double forward, double turn, double strafe) {
+    public void drive(double forward, double strafe, double turn) {
+        turn = 0;
         double scale = Math.max(
-                1.0, Math.abs(forward) + Math.abs(turn) + Math.abs(strafe)
+                1.0,
+                Math.abs(forward) + Math.abs(strafe) + Math.abs(turn)
         );
 
-        leftFrontDrive.setPower((forward + turn + strafe) / scale);
-        leftBackDrive.setPower((forward - turn + strafe) / scale);
-        rightFrontDrive.setPower((forward - turn - strafe) / scale);
-        rightBackDrive.setPower((forward + turn - strafe) / scale);
+        leftFrontDrive.setPower(
+                (forward + strafe + turn) / scale
+        );
+        leftBackDrive.setPower(
+                (forward - strafe + turn) / scale
+        );
+        rightFrontDrive.setPower(
+                (forward - strafe - turn) / scale
+        );
+        rightBackDrive.setPower(
+                (forward + strafe - turn) / scale
+        );
     }
 
     public void setIntake(boolean intakeOn) {
@@ -93,6 +152,47 @@ public class ProgrammingBoard {
 
     public boolean isIntakeOn() {
         return intakeOn;
+    }
+
+    public void updateFieldPosition() {
+        stampede.updateFieldPosition();
+    }
+
+    public void setFieldPosition(double x, double y, double heading) {
+        stampede.setFieldPosition(x, y, heading);
+    }
+
+    public double getX() {
+        return stampede.getX();
+    }
+
+    public double getY() {
+        return stampede.getY();
+    }
+
+    public double getHeading() {
+        return stampede.getHeading();
+    }
+
+    public boolean isTrackingReady() {
+        return stampede.isTrackingReady();
+    }
+
+    public void resetCalibrationReadings() {
+        stampede.resetCalibrationReadings();
+    }
+
+    public void reportTelemetry(Telemetry telemetry) {
+        stampede.reportTelemetry(telemetry);
+
+        telemetry.addData(
+                "Wheel powers (LF/LB/RF/RB)",
+                "%.2f / %.2f / %.2f / %.2f",
+                leftFrontDrive.getPower(),
+                leftBackDrive.getPower(),
+                rightFrontDrive.getPower(),
+                rightBackDrive.getPower()
+        );
     }
 
     public void stop() {

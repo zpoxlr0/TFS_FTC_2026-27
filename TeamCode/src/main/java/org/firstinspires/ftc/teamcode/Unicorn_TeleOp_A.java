@@ -10,66 +10,105 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
     private final ProgrammingBoard board = new ProgrammingBoard();
     private final ElapsedTime runtime = new ElapsedTime();
 
+    // Local test origin at PLAY.
+    // Later, these can represent your actual field starting position.
+    private static final double START_X = 0;
+    private static final double START_Y = 0;
+    private static final double START_HEADING = 0;
+
     @Override
     public void runOpMode() {
         board.init(hardwareMap);
 
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-
-        waitForStart();
-
-        if (isStopRequested()) {
-            return;
-        }
-
-        runtime.reset();
-
-        while (opModeIsActive()) {
-            // Driving inputs
-            double forward = -gamepad1.left_stick_y;
-            double turn = gamepad1.left_stick_x;
-            double strafe = gamepad1.right_stick_x;
-
-            board.drive(forward, strafe, turn);
-
-
-            // Intake
-            board.setIntake(gamepad1.left_bumper);
-
-            // Run outtake while the right trigger is held.
-            boolean outtakeOn = gamepad1.right_trigger > 0.1;
-            board.setOuttake(outtakeOn);
-
-            // Transfer
-            board.setTransfer(gamepad1.right_bumper);
-
-            // Telemetry
-            telemetry.addData(
-                    "Status",
-                    "Run Time: " + runtime.toString()
+        try {
+            telemetry.addData("Status", "Initialized");
+            telemetry.addLine(
+                    "A: zero calibration readings while stationary"
             );
 
-            telemetry.addData(
-                    "Drive",
-                    "Left: %.2f | Right: %.2f",
-                    board.getLeftPower(),
-                    board.getRightPower()
-            );
-
-            telemetry.addData(
-                    "Intake",
-                    board.isIntakeOn() ? "ON" : "OFF"
-            );
-
-            telemetry.addData(
-                    "Outtake",
-                    outtakeOn ? "ON" : "OFF"
-            );
-
+            board.reportTelemetry(telemetry);
             telemetry.update();
-        }
 
-        board.stop();
+            waitForStart();
+
+            if (isStopRequested()) {
+                return;
+            }
+
+            board.setFieldPosition(
+                    START_X,
+                    START_Y,
+                    START_HEADING
+            );
+            board.resetCalibrationReadings();
+            runtime.reset();
+
+            boolean aWasPressed = gamepad1.a;
+
+            while (opModeIsActive()) {
+                board.updateFieldPosition();
+
+                // Driving inputs: same assignments as your original code.
+                double forward = -gamepad1.left_stick_y;
+                double turn = gamepad1.left_stick_x;
+                double strafe = gamepad1.right_stick_x;
+
+                board.drive(forward, strafe, turn);
+
+                // Intake
+                board.setIntake(gamepad1.left_bumper);
+
+                // Outtake
+                boolean outtakeOn = gamepad1.right_trigger > 0.1;
+                board.setOuttake(outtakeOn);
+
+                // Transfer
+                board.setTransfer(gamepad1.right_bumper);
+
+                // One reset per A-button press.
+                if (gamepad1.a && !aWasPressed) {
+                    board.resetCalibrationReadings();
+                }
+
+                aWasPressed = gamepad1.a;
+
+                telemetry.addData(
+                        "Status",
+                        "Run Time: " + runtime
+                );
+
+                telemetry.addData(
+                        "Inputs (forward/right/CW)",
+                        "%.2f / %.2f / %.2f",
+                        forward,
+                        strafe,
+                        turn
+                );
+
+                telemetry.addData(
+                        "Drive",
+                        "Left: %.2f | Right: %.2f",
+                        board.getLeftPower(),
+                        board.getRightPower()
+                );
+
+                telemetry.addData(
+                        "Intake",
+                        board.isIntakeOn() ? "ON" : "OFF"
+                );
+
+                telemetry.addData(
+                        "Outtake",
+                        outtakeOn ? "ON" : "OFF"
+                );
+
+                board.reportTelemetry(telemetry);
+                telemetry.update();
+
+                idle();
+            }
+        } finally {
+            board.stop();
+        }
     }
 }

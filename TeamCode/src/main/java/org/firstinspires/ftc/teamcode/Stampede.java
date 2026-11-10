@@ -54,11 +54,9 @@ public class Stampede {
 
     // Replace these with YOUR measured positive counts per inch.
     // NaN deliberately disables distance tracking before calibration.
-    public static final double FORWARD_ENCODER_COUNTS_PER_INCH =
-            Double.NaN;
+    public static final double FORWARD_ENCODER_COUNTS_PER_INCH = 42.4147;
 
-    public static final double RIGHT_ENCODER_COUNTS_PER_INCH =
-            Double.NaN;
+    public static final double RIGHT_ENCODER_COUNTS_PER_INCH = -5.4162;
 
     private final DcMotor leftFrontDrive;
     private final DcMotor leftBackDrive;
@@ -103,7 +101,7 @@ public class Stampede {
         return Double.isFinite(FORWARD_ENCODER_COUNTS_PER_INCH)
                 && FORWARD_ENCODER_COUNTS_PER_INCH > 0
                 && Double.isFinite(RIGHT_ENCODER_COUNTS_PER_INCH)
-                && RIGHT_ENCODER_COUNTS_PER_INCH > 0;
+                && RIGHT_ENCODER_COUNTS_PER_INCH != 0;
     }
 
     public boolean isTrackingReady() {

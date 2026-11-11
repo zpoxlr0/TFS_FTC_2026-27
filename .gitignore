@@ -12,3 +12,5 @@
 .gradle/config.properties
 .gradle/vcs-1/gc.properties
 build/reports/problems/problems-report.html
+/.idea/caches/deviceStreaming.xml
+/local.properties

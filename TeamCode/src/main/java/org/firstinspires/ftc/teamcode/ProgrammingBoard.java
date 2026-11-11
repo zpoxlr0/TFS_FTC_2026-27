@@ -107,7 +107,7 @@ public class ProgrammingBoard {
         );
     }
 
-    public void drive(double forward, double strafe, double turn) {
+    public void drive(double forward, double strafe, double turn, double speedScale) {
         forward = 0;
         double scale = Math.max(
                 1.0,
@@ -115,16 +115,16 @@ public class ProgrammingBoard {
         );
 
         leftFrontDrive.setPower(
-                (forward + strafe + turn) / scale
+                (forward + strafe + turn) / scale * speedScale
         );
         leftBackDrive.setPower(
-                (forward - strafe + turn) / scale
+                (forward - strafe + turn) / scale * speedScale
         );
         rightFrontDrive.setPower(
-                (forward - strafe - turn) / scale
+                (forward - strafe - turn) / scale * speedScale
         );
         rightBackDrive.setPower(
-                (forward + strafe - turn) / scale
+                (forward + strafe - turn) / scale * speedScale
         );
     }
 

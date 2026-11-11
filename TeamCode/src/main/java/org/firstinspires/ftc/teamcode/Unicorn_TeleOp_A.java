@@ -52,18 +52,19 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
                 double forward = -gamepad1.left_stick_y;
                 double turn = gamepad1.left_stick_x;
                 double strafe = gamepad1.right_stick_x;
+                double speedScale = gamepad1.right_bumper ? 1.0 : 0.7;
 
-                board.drive(forward, strafe, turn);
+                board.drive(forward, strafe, turn, speedScale);
 
                 // Intake
                 board.setIntake(gamepad1.left_bumper);
 
                 // Outtake
-                boolean outtakeOn = gamepad1.right_trigger > 0.1;
+                boolean outtakeOn = gamepad1.b;
                 board.setOuttake(outtakeOn);
 
                 // Transfer
-                board.setTransfer(gamepad1.right_bumper);
+                board.setTransfer(gamepad1.x);
 
                 // One reset per A-button press.
                 if (gamepad1.a && !aWasPressed) {

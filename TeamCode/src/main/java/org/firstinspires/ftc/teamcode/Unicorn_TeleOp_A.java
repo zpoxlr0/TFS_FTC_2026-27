@@ -1,30 +1,35 @@
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp
+@TeleOp(name = "Unicorn TeleOp A")
 public class Unicorn_TeleOp_A extends LinearOpMode {
 
     private final ProgrammingBoard board = new ProgrammingBoard();
     private final ElapsedTime runtime = new ElapsedTime();
 
-    // Local test origin at PLAY.
-    // Later, these can represent your actual field starting position.
+    // Starting position for tracking
     private static final double START_X = 0;
     private static final double START_Y = 0;
     private static final double START_HEADING = 0;
 
     @Override
     public void runOpMode() {
+
         board.init(hardwareMap);
 
         try {
+
+            // INITIALIZATION
             telemetry.addData("Status", "Initialized");
-            telemetry.addLine(
-                    "A: zero calibration readings while stationary"
-            );
+            telemetry.addLine("LB: Toggle intake ON/OFF");
+            telemetry.addLine("RB: Hold transfer");
+            telemetry.addLine("RT: Hold outtake");
+            telemetry.addLine("B: Hold full speed");
+            telemetry.addLine("A: Reset calibration readings");
 
             board.reportTelemetry(telemetry);
             telemetry.update();
@@ -40,50 +45,69 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
                     START_Y,
                     START_HEADING
             );
+
             board.resetCalibrationReadings();
             runtime.reset();
 
+            boolean intakeOn = false;
+            boolean leftBumperWasPressed = gamepad1.left_bumper;
             boolean aWasPressed = gamepad1.a;
 
+            // MAIN TELEOP LOOP
             while (opModeIsActive()) {
+
+                // Update robot position
                 board.updateFieldPosition();
 
-                // Driving inputs: same assignments as your original code.
+                // DRIVING
                 double forward = -gamepad1.left_stick_y;
                 double turn = gamepad1.left_stick_x;
                 double strafe = gamepad1.right_stick_x;
-                double speedScale = gamepad1.right_bumper ? 1.0 : 0.7;
 
-                board.drive(forward, strafe, turn, speedScale);
+                // B = full speed (100%)
+                // Otherwise 70%
+                double speedScale =
+                        gamepad1.b ? 1.0 : 0.7;
 
-                // Intake
-                board.setIntake(gamepad1.left_bumper);
+                board.drive(
+                        forward,
+                        strafe,
+                        turn,
+                        speedScale
+                );
 
-                // Outtake
-                boolean outtakeOn = gamepad1.b;
+                // INTAKE: LEFT BUMPER TOGGLE
+                boolean leftBumperPressed =
+                        gamepad1.left_bumper;
+
+                if (leftBumperPressed && !leftBumperWasPressed) {
+                    intakeOn = !intakeOn;
+                }
+
+                leftBumperWasPressed = leftBumperPressed;
+
+                // Controls both intake servos and intake motor
+                board.setIntake(intakeOn);
+
+                // TRANSFER: RIGHT BUMPER
+                boolean transferOn = gamepad1.right_bumper;
+                board.setTransfer(transferOn);
+
+                // OUTTAKE: RIGHT TRIGGER
+                boolean outtakeOn = gamepad1.right_trigger > 0.1;
                 board.setOuttake(outtakeOn);
 
-                // Transfer
-                board.setTransfer(gamepad1.x);
-
-                // One reset per A-button press.
+                // CALIBRATION: A BUTTON
                 if (gamepad1.a && !aWasPressed) {
                     board.resetCalibrationReadings();
                 }
 
                 aWasPressed = gamepad1.a;
 
+                // TELEMETRY
                 telemetry.addData(
                         "Status",
                         "Run Time: " + runtime
-                );
-
-                telemetry.addData(
-                        "Inputs (forward/right/CW)",
-                        "%.2f / %.2f / %.2f",
-                        forward,
-                        strafe,
-                        turn
                 );
 
                 telemetry.addData(
@@ -95,7 +119,12 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
 
                 telemetry.addData(
                         "Intake",
-                        board.isIntakeOn() ? "ON" : "OFF"
+                        intakeOn ? "ON" : "OFF"
+                );
+
+                telemetry.addData(
+                        "Transfer",
+                        transferOn ? "ON" : "OFF"
                 );
 
                 telemetry.addData(
@@ -103,12 +132,19 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
                         outtakeOn ? "ON" : "OFF"
                 );
 
+                telemetry.addData(
+                        "Drive Speed",
+                        speedScale == 1.0 ? "100%" : "70%"
+                );
+
                 board.reportTelemetry(telemetry);
                 telemetry.update();
 
                 idle();
             }
+
         } finally {
+            // Stop all motors and servos
             board.stop();
         }
     }

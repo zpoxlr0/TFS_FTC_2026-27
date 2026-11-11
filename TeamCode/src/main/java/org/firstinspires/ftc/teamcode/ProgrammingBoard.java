@@ -136,7 +136,7 @@ public class ProgrammingBoard {
     }
 
     public void setOuttake(boolean outtakeOn) {
-        outtakeMotor.setPower(outtakeOn ? 0.65 : 0.0);
+        outtakeMotor.setPower(outtakeOn ? 0.67 : 0.0);
     }
 
     public void setTransfer(boolean transferOn) {

@@ -108,7 +108,6 @@ public class ProgrammingBoard {
     }
 
     public void drive(double forward, double strafe, double turn, double speedScale) {
-        forward = 0;
         double scale = Math.max(
                 1.0,
                 Math.abs(forward) + Math.abs(strafe) + Math.abs(turn)

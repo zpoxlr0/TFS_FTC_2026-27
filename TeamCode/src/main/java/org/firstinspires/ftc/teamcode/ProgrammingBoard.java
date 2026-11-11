@@ -198,7 +198,7 @@ public class ProgrammingBoard {
     }
 
     public void stop() {
-        drive(0.0, 0.0, 0.0);
+        drive(0.0, 0.0, 0.0, 0.0);
         setIntake(false);
         setOuttake(false);
         setTransfer(false);

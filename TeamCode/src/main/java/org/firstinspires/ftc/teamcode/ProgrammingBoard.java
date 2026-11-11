@@ -82,6 +82,8 @@ public class ProgrammingBoard {
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
+        outtakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         IMU imu = null;
 
         if (HUB_LOGO_FACING != null) {
@@ -135,7 +137,7 @@ public class ProgrammingBoard {
     }
 
     public void setOuttake(boolean outtakeOn) {
-        outtakeMotor.setPower(outtakeOn ? 0.8 : 0.0);
+        outtakeMotor.setPower(outtakeOn ? 0.7 : 0.0);
     }
 
     public void setTransfer(boolean transferOn) {

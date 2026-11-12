@@ -108,6 +108,8 @@ public class ProgrammingBoard {
     }
 
     public void drive(double forward, double strafe, double turn, double speedScale) {
+        turn = turn * (speedScale == 1 ? 1 : 0.67); // experimental thing that will hopefully make turning precision better
+
         double scale = Math.max(
                 1.0,
                 Math.abs(forward) + Math.abs(strafe) + Math.abs(turn)

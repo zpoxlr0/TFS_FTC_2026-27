@@ -27,7 +27,7 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
             telemetry.addData("Status", "Initialized");
             telemetry.addLine("LB: Toggle intake ON/OFF");
             telemetry.addLine("RB: Hold transfer");
-            telemetry.addLine("RT: Hold outtake");
+            telemetry.addLine("RT: Toggle outtake ON/OFF");
             telemetry.addLine("B: Hold full speed");
             telemetry.addLine("A: Reset calibration readings");
 
@@ -51,6 +51,8 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
 
             boolean intakeOn = false;
             boolean leftBumperWasPressed = gamepad1.left_bumper;
+            boolean outtakeOn = false;
+            boolean rightTriggerWasPressed = gamepad1.right_trigger > 0.1;
             boolean aWasPressed = gamepad1.a;
 
             // MAIN TELEOP LOOP
@@ -93,8 +95,12 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
                 boolean transferOn = gamepad1.right_bumper;
                 board.setTransfer(transferOn);
 
-                // OUTTAKE: RIGHT TRIGGER
-                boolean outtakeOn = gamepad1.right_trigger > 0.1;
+                // OUTTAKE: RIGHT TRIGGER TOGGLE
+                boolean rightTriggerPressed = gamepad1.right_trigger > 0.1;
+                if (rightTriggerPressed && !rightTriggerWasPressed) {
+                    outtakeOn = !outtakeOn;
+                }
+                rightTriggerWasPressed = rightTriggerPressed;
                 board.setOuttake(outtakeOn);
 
                 // CALIBRATION: A BUTTON

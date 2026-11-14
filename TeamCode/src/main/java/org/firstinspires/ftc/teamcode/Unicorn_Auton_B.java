@@ -226,7 +226,7 @@ public class Unicorn_Auton_B extends OpMode {
 
             // STRAT 1 //
             case M_SLIGHT_ADJUST:
-                runStep("INIT_MOVE_TIME", State.M_INIT_REVERSE, power, 0, 0, true, false, false, 0.05);
+                runStep("INIT_MOVE_TIME", State.M_TURN, power, 0, 0, true, false, false, 0.05);
                 break;
             case M_TURN:
                 runStep("ROTATION_TIME", State.M_INIT_DRIVE, 0, 0, -power, false, false, false);

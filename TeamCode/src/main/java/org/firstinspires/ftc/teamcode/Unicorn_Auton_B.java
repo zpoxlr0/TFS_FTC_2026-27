@@ -41,10 +41,10 @@ public class Unicorn_Auton_B extends OpMode {
         // Main strat (from initially untipped hive): After the initial shots, we go pick up 4 pollen
         // to half tip the second hive. Experimentally, we will shoot from an angle as to not disturb
         // our teammate's auton.
-        M_FLOWER_TURN,
-        M_FLOWER_DRIVE,
-        M_FLOWER_INTAKE,
-        M_FLOWER_REVERSE,
+        M_SLIGHT_ADJUST,
+        M_TURN,
+        M_INIT_DRIVE,
+        M_INIT_REVERSE,
         M_CROSSFIELD_ROTATE,
         M_CROSSFIELD,
         M_NEWPOS_TURN,
@@ -169,7 +169,12 @@ public class Unicorn_Auton_B extends OpMode {
         rightWasPressed = gamepad1.dpad_right;
         TUNABLE_VALUES.put(selected, value);
 
+        telemetry.addLine("DPAD up/down for selecting setting");
+        telemetry.addLine("DPAD left/right for adjusting value");
+        telemetry.addLine("-----------------------------------");
+        telemetry.addData("Setting number", "%d / %d", TUNABLE_SETTING + 1, TUNABLES.length);
         telemetry.addData(selected, "%.1f", value);
+        telemetry.addLine("-----------------------------------");
         telemetry.addData("Alliance", TUNABLE_VALUES.get("ALLIANCE_ZERO_RED_ZEROONE_BLUE") >= 0.05
                 ? "BLUE" : "RED");
         telemetry.addData("Strat", TUNABLE_VALUES.get("STRAT") >= 0.15 ? "2 - TIPPED SIDE" : "1 - UNTIPPED SIDE");
@@ -215,22 +220,22 @@ public class Unicorn_Auton_B extends OpMode {
                 if (TUNABLE_VALUES.get("STRAT") >= 0.15) {
                     runStep("REVERSE_TIME", State.FIRST_FLOWER_TURN, power, 0, 0, false, false, false);
                 } else {
-                    runStep("REVERSE_TIME", State.M_FLOWER_TURN, power, 0, 0, false, false, false);
+                    runStep("REVERSE_TIME", State.M_SLIGHT_ADJUST, power, 0, 0, false, false, false);
                 }
                 break;
 
             // STRAT 1 //
-            case M_FLOWER_TURN:
-                runStep("ROTATION_TIME", State.M_FLOWER_DRIVE, 0, 0, -power, false, false, false);
+            case M_SLIGHT_ADJUST:
+                runStep("INIT_MOVE_TIME", State.M_INIT_REVERSE, power, 0, 0, true, false, false, 0.05);
                 break;
-            case M_FLOWER_DRIVE:
-                runStep("INIT_MOVE_TIME", State.M_FLOWER_INTAKE, power, 0, 0, false, false, false, 0.85);
+            case M_TURN:
+                runStep("ROTATION_TIME", State.M_INIT_DRIVE, 0, 0, -power, false, false, false);
                 break;
-            case M_FLOWER_INTAKE:
-                runStep("FLOWER_P2_TIME", State.M_FLOWER_REVERSE, power*0.2, power, 0, true, false, false, 0.75);
+            case M_INIT_DRIVE:
+                runStep("INIT_MOVE_TIME", State.M_INIT_REVERSE, power, -power*0.02, 0, true, false, false);
                 break;
-            case M_FLOWER_REVERSE:
-                runStep("FLOWER_P2_TIME", State.M_CROSSFIELD_ROTATE, -power*0.2, -power, 0, true, false, false, 0.75);
+            case M_INIT_REVERSE:
+                runStep("INIT_MOVE_TIME", State.M_CROSSFIELD_ROTATE, -power, power*0.02, 0, true, false, false, 0.5);
                 break;
             case M_CROSSFIELD_ROTATE:
                 runStep("ROTATION_TIME", State.M_CROSSFIELD, 0, 0, power, false, false, false);

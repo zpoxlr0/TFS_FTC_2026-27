@@ -12,17 +12,8 @@ import java.util.Map;
 @Autonomous(name = "Unicorn Auton B")
 public class Unicorn_Auton_B extends OpMode {
     // VARIABLES //
-    private DcMotor leftFrontDrive;
-    private DcMotor leftBackDrive;
-    private DcMotor rightFrontDrive;
-    private DcMotor rightBackDrive;
-
-    private CRServo leftIntakeServo;
-    private CRServo rightIntakeServo;
-
-    private DcMotor outtakeMotor;
-    private DcMotor intakeMotor;
-    private DcMotor transferMotor;
+    // programming board
+    private final ProgrammingBoard board = new ProgrammingBoard();
 
     // the very important ElapsedTime which is very important until we actually can do auto calibration
     private final ElapsedTime runtime = new ElapsedTime();
@@ -102,45 +93,7 @@ public class Unicorn_Auton_B extends OpMode {
 
     @Override
     public void init() {
-        // HARDWAREMAP BUREAUCRACY //
-        leftFrontDrive =
-                hardwareMap.get(DcMotor.class, "left_front_drive");
-        leftBackDrive =
-                hardwareMap.get(DcMotor.class, "left_back_drive");
-        rightFrontDrive =
-                hardwareMap.get(DcMotor.class, "right_front_drive");
-        rightBackDrive =
-                hardwareMap.get(DcMotor.class, "right_back_drive");
-
-        leftIntakeServo =
-                hardwareMap.get(CRServo.class, "left_intake_servo");
-        rightIntakeServo =
-                hardwareMap.get(CRServo.class, "right_intake_servo");
-
-        outtakeMotor =
-                hardwareMap.get(DcMotor.class, "outtake_motor");
-        intakeMotor =
-                hardwareMap.get(DcMotor.class, "intake_motor");
-        transferMotor =
-                hardwareMap.get(DcMotor.class, "transfer_motor");
-
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-
-        outtakeMotor.setDirection(DcMotor.Direction.REVERSE);
-        outtakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        stopAll();
-
-        for (DcMotor motor : new DcMotor[]{
-                leftFrontDrive, leftBackDrive,
-                rightFrontDrive, rightBackDrive
-        }) {
-            motor.setPower(0);
-            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        }
+        board.init(hardwareMap);
     }
 
     @Override
@@ -305,29 +258,22 @@ public class Unicorn_Auton_B extends OpMode {
 
     private void runStep(String duration, State next, double forward, double strafe, double turn,
                          boolean intake, boolean outtake, boolean transfer, double durationMultiplier) {
-        if (TUNABLE_VALUES.get(duration) != 0) {
-            if (stateTime.seconds() >= TUNABLE_VALUES.get(duration) * durationMultiplier) {
-                if (next != State.FIRST_SHOOT && next != State.SECOND_SHOOT) {
-                    stopAll();
-                }
-                transitionTo(next);
-                return;
+        if (stateTime.seconds() >= TUNABLE_VALUES.get(duration) * durationMultiplier) {
+            if (next != State.FIRST_SHOOT && next != State.SECOND_SHOOT) {
+                stopAll();
             }
-
-            double direction = TUNABLE_VALUES.get("ALLIANCE_ZERO_RED_ZEROONE_BLUE") >= 0.05 ? -1.0 : 1.0;
-            strafe *= direction;
-            turn *= direction;
-
-            leftFrontDrive.setPower(forward + turn + strafe);
-            leftBackDrive.setPower(forward - turn + strafe);
-            rightFrontDrive.setPower(forward - turn - strafe);
-            rightBackDrive.setPower(forward + turn - strafe);
-            leftIntakeServo.setPower(intake ? -1.0 : 0.0);
-            rightIntakeServo.setPower(intake ? 1.0 : 0.0);
-            intakeMotor.setPower(intake ? 1.0 : 0.0);
-            outtakeMotor.setPower(outtake ? 0.67 : 0.0);
-            transferMotor.setPower(transfer ? 1.0 : 0.0);
+            transitionTo(next);
+            return;
         }
+
+        double direction = TUNABLE_VALUES.get("ALLIANCE_ZERO_RED_ZEROONE_BLUE") >= 0.05 ? -1.0 : 1.0;
+        strafe *= direction;
+        turn *= direction;
+
+        board.drive(forward, strafe, turn, 1.0);
+        board.setIntake(intake);
+        board.setOuttake(outtake);
+        board.setTransfer(transfer);
     }
     private void runStep(String duration, State next, double forward, double strafe, double turn,
                          boolean intake, boolean outtake, boolean transfer) {
@@ -340,15 +286,7 @@ public class Unicorn_Auton_B extends OpMode {
     }
 
     private void stopAll() {
-        leftFrontDrive.setPower(0);
-        leftBackDrive.setPower(0);
-        rightFrontDrive.setPower(0);
-        rightBackDrive.setPower(0);
-        leftIntakeServo.setPower(0);
-        rightIntakeServo.setPower(0);
-        intakeMotor.setPower(0);
-        outtakeMotor.setPower(0);
-        transferMotor.setPower(0);
+        board.stop();
     }
 
     @Override

@@ -31,7 +31,6 @@ public class Unicorn_Auton_B extends OpMode {
         // Main strat (from initially untipped hive): After the initial shots, we go pick up 4 pollen
         // to half tip the second hive. Experimentally, we will shoot from an angle as to not disturb
         // our teammate's auton.
-        M_SLIGHT_ADJUST,
         M_TURN,
         M_INIT_DRIVE,
         M_INIT_REVERSE,
@@ -69,13 +68,14 @@ public class Unicorn_Auton_B extends OpMode {
         TUNABLE_VALUES.put("DRIVE_POWER", 0.7);
         TUNABLE_VALUES.put("STRAT", 0.1); // strat, 0.1 is regular (no delay), 0.2 is delay
         TUNABLE_VALUES.put("ALLIANCE_ZERO_RED_ZEROONE_BLUE", 0.0); // alliance, 0.0 is red, 0.1 is blue
-        TUNABLE_VALUES.put("INIT_MOVE_TIME", 2.0); // how long to move to 1st hive
+        TUNABLE_VALUES.put("INIT_MOVE_TIME", 1.0); // how long to move to 1st hive
         TUNABLE_VALUES.put("ROTATION_TIME", 0.5); // how long to rotate for (forwards and backwards)
         TUNABLE_VALUES.put("REVERSE_TIME", 0.5); // how long to reverse for
-        TUNABLE_VALUES.put("REV_TIME", 2.0); // how long to rev for before turning the transfer
+        TUNABLE_VALUES.put("REV_TIME", 3.0); // how long to rev for before turning the transfer
         TUNABLE_VALUES.put("TRANSFER_TIME", 5.0); // how long to run the transfer
         TUNABLE_VALUES.put("FLOWER_P1_TIME", 0.3); // how long to move forward toward the flower
         TUNABLE_VALUES.put("FLOWER_P2_TIME", 1.0); // how long to strafe while collecting from the flower
+        TUNABLE_VALUES.put("SLIGHT_ADJUST_TIME", 0.1); // slight adjust at start of strat 1 in LEAVE_HIVE
     }
 
     private static final String[] TUNABLES =
@@ -172,31 +172,29 @@ public class Unicorn_Auton_B extends OpMode {
                 if (TUNABLE_VALUES.get("STRAT") >= 0.15) {
                     runStep("REVERSE_TIME", State.FIRST_FLOWER_TURN, power, 0, 0, false, false, false);
                 } else {
-                    runStep("REVERSE_TIME", State.M_SLIGHT_ADJUST, power, 0, 0, false, false, false);
+                    // slight adjust moved to here
+                    runStep("SLIGHT_ADJUST_TIME", State.M_TURN, power, 0, 0, false, false, false);
                 }
                 break;
 
             // STRAT 1 //
-            case M_SLIGHT_ADJUST:
-                runStep("INIT_MOVE_TIME", State.M_TURN, power, 0, 0, true, false, false, 0.05);
-                break;
             case M_TURN:
                 runStep("ROTATION_TIME", State.M_INIT_DRIVE, 0, 0, -power, false, false, false);
                 break;
             case M_INIT_DRIVE:
-                runStep("INIT_MOVE_TIME", State.M_INIT_REVERSE, power, -power*0.3, 0, true, false, false);
+                runStep("INIT_MOVE_TIME", State.M_INIT_REVERSE, power, -power*0.15, 0, true, false, false);
                 break;
             case M_INIT_REVERSE:
-                runStep("INIT_MOVE_TIME", State.M_CROSSFIELD_ROTATE, -power, power*0.3, 0, true, false, false, 0.5);
+                runStep("INIT_MOVE_TIME", State.M_CROSSFIELD_ROTATE, -power, power*0.15, 0, true, false, false, 0.5);
                 break;
             case M_CROSSFIELD_ROTATE:
-                runStep("ROTATION_TIME", State.M_CROSSFIELD, 0, 0, power, false, false, false);
+                runStep("ROTATION_TIME", State.M_CROSSFIELD, 0, 0, power, false, false, false, 0.95);
                 break;
             case M_CROSSFIELD:
-                runStep("INIT_MOVE_TIME", State.M_NEWPOS_TURN, power, 0, 0, false, false, false, 1.8);
+                runStep("INIT_MOVE_TIME", State.M_NEWPOS_TURN, power, 0, 0, false, false, false, 2.4);
                 break;
             case M_NEWPOS_TURN:
-                runStep("ROTATION_TIME", State.M_SECOND_SPINUP, 0, 0, power, false, false, false, 1.33);
+                runStep("ROTATION_TIME", State.M_SECOND_SPINUP, 0, 0, power, false, false, false, 1.5);
                 break;
             case M_SECOND_SPINUP:
                 runStep("REV_TIME", State.M_SECOND_SHOOT, 0, 0, 0, false, true, false);
@@ -273,7 +271,7 @@ public class Unicorn_Auton_B extends OpMode {
         strafe *= direction;
         turn *= direction;
 
-        board.drive(forward, strafe, turn, 1.0);
+        board.drive(forward, turn, strafe, 1.0);
         board.setIntake(intake);
         board.setOuttake(outtake);
         board.setTransfer(transfer);

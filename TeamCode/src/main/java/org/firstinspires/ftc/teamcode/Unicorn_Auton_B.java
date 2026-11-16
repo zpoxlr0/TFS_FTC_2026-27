@@ -80,7 +80,7 @@ public class Unicorn_Auton_B extends OpMode {
         TUNABLE_VALUES.put("STRAT", 0.1); // strat, 0.1 is regular (no delay), 0.2 is delay
         TUNABLE_VALUES.put("ALLIANCE_ZERO_RED_ZEROONE_BLUE", 0.0); // alliance, 0.0 is red, 0.1 is blue
         TUNABLE_VALUES.put("INIT_MOVE_TIME", 2.0); // how long to move to 1st hive
-        TUNABLE_VALUES.put("ROTATION_TIME", 1.3); // how long to rotate for (forwards and backwards)
+        TUNABLE_VALUES.put("ROTATION_TIME", 0.5); // how long to rotate for (forwards and backwards)
         TUNABLE_VALUES.put("REVERSE_TIME", 0.5); // how long to reverse for
         TUNABLE_VALUES.put("REV_TIME", 2.0); // how long to rev for before turning the transfer
         TUNABLE_VALUES.put("TRANSFER_TIME", 5.0); // how long to run the transfer
@@ -232,10 +232,10 @@ public class Unicorn_Auton_B extends OpMode {
                 runStep("ROTATION_TIME", State.M_INIT_DRIVE, 0, 0, -power, false, false, false);
                 break;
             case M_INIT_DRIVE:
-                runStep("INIT_MOVE_TIME", State.M_INIT_REVERSE, power, -power*0.02, 0, true, false, false);
+                runStep("INIT_MOVE_TIME", State.M_INIT_REVERSE, power, -power*0.5, 0, true, false, false);
                 break;
             case M_INIT_REVERSE:
-                runStep("INIT_MOVE_TIME", State.M_CROSSFIELD_ROTATE, -power, power*0.02, 0, true, false, false, 0.5);
+                runStep("INIT_MOVE_TIME", State.M_CROSSFIELD_ROTATE, -power, power*0.5, 0, true, false, false, 0.5);
                 break;
             case M_CROSSFIELD_ROTATE:
                 runStep("ROTATION_TIME", State.M_CROSSFIELD, 0, 0, power, false, false, false);

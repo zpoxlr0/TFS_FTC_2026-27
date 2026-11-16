@@ -100,9 +100,9 @@ public class Unicorn_Auton_B extends OpMode {
     @Override
     public void init_loop() {
         if (gamepad1.dpad_up && !upWasPressed) {
-            TUNABLE_SETTING = Math.min(TUNABLE_SETTING + 1, TUNABLES.length - 1);
-        } else if (gamepad1.dpad_down && !downWasPressed) {
             TUNABLE_SETTING = Math.max(TUNABLE_SETTING - 1, 0);
+        } else if (gamepad1.dpad_down && !downWasPressed) {
+            TUNABLE_SETTING = Math.min(TUNABLE_SETTING + 1, TUNABLES.length - 1);
         }
 
         upWasPressed = gamepad1.dpad_up;

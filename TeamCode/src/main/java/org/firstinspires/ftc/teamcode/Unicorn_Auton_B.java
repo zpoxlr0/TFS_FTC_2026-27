@@ -318,10 +318,10 @@ public class Unicorn_Auton_B extends OpMode {
             strafe *= direction;
             turn *= direction;
 
-            leftFrontDrive.setPower(forward + strafe + turn);
-            leftBackDrive.setPower(forward - strafe + turn);
-            rightFrontDrive.setPower(forward - strafe - turn);
-            rightBackDrive.setPower(forward + strafe - turn);
+            leftFrontDrive.setPower(forward + turn + strafe);
+            leftBackDrive.setPower(forward - turn + strafe);
+            rightFrontDrive.setPower(forward - turn - strafe);
+            rightBackDrive.setPower(forward + turn - strafe);
             leftIntakeServo.setPower(intake ? -1.0 : 0.0);
             rightIntakeServo.setPower(intake ? 1.0 : 0.0);
             intakeMotor.setPower(intake ? 1.0 : 0.0);

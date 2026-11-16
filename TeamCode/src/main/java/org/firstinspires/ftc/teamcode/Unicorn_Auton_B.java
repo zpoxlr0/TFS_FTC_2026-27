@@ -18,6 +18,7 @@ public class Unicorn_Auton_B extends OpMode {
     // the very important ElapsedTime which is very important until we actually can do auto calibration
     private final ElapsedTime runtime = new ElapsedTime();
     private final ElapsedTime stateTime = new ElapsedTime();
+    private double stateDuration = 0;
 
     // -------- State machine --------
     private enum State {
@@ -253,13 +254,16 @@ public class Unicorn_Auton_B extends OpMode {
 
         telemetry.addData("Run Time: ", runtime);
         telemetry.addData("State: ", state);
-        telemetry.addData("State Time: ", stateTime);
+        telemetry.addData("State Time: ", "%.2f", stateTime.seconds());
+        telemetry.addData("State Duration: ", "%.2f", stateDuration);
         telemetry.update();
     }
 
     private void runStep(String duration, State next, double forward, double strafe, double turn,
                          boolean intake, boolean outtake, boolean transfer, double durationMultiplier) {
-        if (stateTime.seconds() >= TUNABLE_VALUES.get(duration) * durationMultiplier) {
+        stateDuration = TUNABLE_VALUES.get(duration) * durationMultiplier;
+
+        if (stateTime.seconds() >= stateDuration) {
             if (next != State.FIRST_SHOOT && next != State.SECOND_SHOOT) {
                 stopAll();
             }
@@ -283,6 +287,7 @@ public class Unicorn_Auton_B extends OpMode {
 
     private void transitionTo(State next) {
         state = next;
+        stateDuration = 0;
         stateTime.reset();
     }
 

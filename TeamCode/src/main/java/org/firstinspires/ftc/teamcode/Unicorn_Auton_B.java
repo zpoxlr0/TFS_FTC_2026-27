@@ -253,6 +253,7 @@ public class Unicorn_Auton_B extends OpMode {
 
         telemetry.addData("Run Time: ", runtime);
         telemetry.addData("State: ", state);
+        telemetry.addData("State Time: ", stateTime);
         telemetry.update();
     }
 

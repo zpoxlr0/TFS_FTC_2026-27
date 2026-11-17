@@ -206,7 +206,7 @@ public class Unicorn_Auton_B extends OpMode {
                 runStep("ROTATION_TIME", State.APPROACH_FLOWER, 0, 0, power, false, false, false, 2.0);
                 break;
             case APPROACH_FLOWER:
-                runStep("REVERSE_TIME", State.COLLECT, power, -power*0.15, 0, true, false, false, 0.9);
+                runStep("REVERSE_TIME", State.COLLECT, power, -power*0.8, 0, true, false, false, 0.9);
                 break;
             case COLLECT:
                 runStep("FLOWER_P2_TIME", State.RETURN_FROM_FLOWER, 0, -power, 0, true, false, false);

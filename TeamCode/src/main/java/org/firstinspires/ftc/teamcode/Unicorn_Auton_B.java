@@ -42,16 +42,12 @@ public class Unicorn_Auton_B extends OpMode {
 
         // Delay strat (from initially tipped hive): After the initial shots, we need 4 more pollen
         // to tip the hive, so we go get it and then come back for a second shot.
-        FIRST_FLOWER_TURN,
-        DRIVE_TO_FLOWER,
-        SECOND_FLOWER_TURN,
+        FLOWER_ROTATION,
         APPROACH_FLOWER,
         COLLECT,
         RETURN_FROM_FLOWER,
         REVERSE_FLOWER_APPROACH,
-        FIRST_RETURN_TURN,
-        REVERSE_FLOWER_DRIVE,
-        SECOND_RETURN_TURN,
+        RETURN_TURN,
         RETURN_TO_HIVE,
         SECOND_SPIN_UP,
         SECOND_SHOOT,
@@ -170,8 +166,10 @@ public class Unicorn_Auton_B extends OpMode {
                 break;
             case LEAVE_HIVE:
                 if (TUNABLE_VALUES.get("STRAT") >= 0.15) {
-                    runStep("REVERSE_TIME", State.FIRST_FLOWER_TURN, power, 0, 0, false, false, false);
+                    // STRAT 2
+                    runStep("REVERSE_TIME", State.FLOWER_ROTATION, power, 0, 0, false, false, false);
                 } else {
+                    // STRAT 1
                     // slight adjust moved to here
                     runStep("SLIGHT_ADJUST_TIME", State.M_TURN, power, 0, 0, false, false, false);
                 }
@@ -204,17 +202,11 @@ public class Unicorn_Auton_B extends OpMode {
                 break;
 
             // STRAT 2 //
-            case FIRST_FLOWER_TURN:
-                runStep("ROTATION_TIME", State.DRIVE_TO_FLOWER, 0, 0, power, false, false, false);
-                break;
-            case DRIVE_TO_FLOWER:
-                runStep("FLOWER_P1_TIME", State.SECOND_FLOWER_TURN, power, 0, 0, false, false, false);
-                break;
-            case SECOND_FLOWER_TURN:
-                runStep("ROTATION_TIME", State.APPROACH_FLOWER, 0, 0, power, false, false, false);
+            case FLOWER_ROTATION:
+                runStep("ROTATION_TIME", State.APPROACH_FLOWER, 0, 0, power, false, false, false, 2.0);
                 break;
             case APPROACH_FLOWER:
-                runStep("REVERSE_TIME", State.COLLECT, power, 0, 0, false, false, false);
+                runStep("REVERSE_TIME", State.COLLECT, power, -power*0.15, 0, true, false, false, 0.9);
                 break;
             case COLLECT:
                 runStep("FLOWER_P2_TIME", State.RETURN_FROM_FLOWER, 0, -power, 0, true, false, false);
@@ -223,16 +215,10 @@ public class Unicorn_Auton_B extends OpMode {
                 runStep("FLOWER_P2_TIME", State.REVERSE_FLOWER_APPROACH, 0, power, 0, true, false, false);
                 break;
             case REVERSE_FLOWER_APPROACH:
-                runStep("REVERSE_TIME", State.FIRST_RETURN_TURN, -power, 0, 0, false, false, false);
+                runStep("REVERSE_TIME", State.RETURN_TURN, -power, power*0.15, 0, false, false, false, 0.9);
                 break;
-            case FIRST_RETURN_TURN:
-                runStep("ROTATION_TIME", State.REVERSE_FLOWER_DRIVE, 0, 0, -power, false, false, false);
-                break;
-            case REVERSE_FLOWER_DRIVE:
-                runStep("FLOWER_P1_TIME", State.SECOND_RETURN_TURN, -power, 0, 0, false, false, false);
-                break;
-            case SECOND_RETURN_TURN:
-                runStep("ROTATION_TIME", State.RETURN_TO_HIVE, 0, 0, -power, false, false, false);
+            case RETURN_TURN:
+                runStep("ROTATION_TIME", State.RETURN_TO_HIVE, 0, 0, power, false, false, false, 2.0);
                 break;
             case RETURN_TO_HIVE:
                 runStep("REVERSE_TIME", State.SECOND_SPIN_UP, -power, 0, 0, false, false, false);
@@ -243,6 +229,8 @@ public class Unicorn_Auton_B extends OpMode {
             case SECOND_SHOOT:
                 runStep("TRANSFER_TIME", State.DONE, 0, 0, 0, false, true, true);
                 break;
+
+            // END //
             case DONE:
                 stopAll();
                 break;

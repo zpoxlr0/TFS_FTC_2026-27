@@ -1,4 +1,3 @@
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -27,8 +26,8 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
             telemetry.addData("Status", "Initialized");
             telemetry.addLine("LB: Toggle intake ON/OFF");
             telemetry.addLine("RB: Hold transfer");
-            telemetry.addLine("RT: Hold outtake");
-            telemetry.addLine("B: Hold full speed");
+            telemetry.addLine("LT: Hold full speed");
+            telemetry.addLine("B: Toggle outtake ON/OFF");
             telemetry.addLine("A: Reset calibration readings");
 
             board.reportTelemetry(telemetry);
@@ -51,6 +50,8 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
 
             boolean intakeOn = false;
             boolean leftBumperWasPressed = gamepad1.left_bumper;
+            boolean outtakeOn = false;
+            boolean bWasPressed = gamepad1.b;
             boolean aWasPressed = gamepad1.a;
 
             // MAIN TELEOP LOOP
@@ -64,10 +65,10 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
                 double turn = gamepad1.left_stick_x;
                 double strafe = gamepad1.right_stick_x;
 
-                // B = full speed (100%)
+                // RT = full speed (100%)
                 // Otherwise 70%
                 double speedScale =
-                        gamepad1.b ? 1.0 : 0.7;
+                        gamepad1.left_trigger > 0.1 ? 1.0 : 0.7;
 
                 board.drive(
                         forward,
@@ -93,8 +94,11 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
                 boolean transferOn = gamepad1.right_bumper;
                 board.setTransfer(transferOn);
 
-                // OUTTAKE: RIGHT TRIGGER
-                boolean outtakeOn = gamepad1.right_trigger > 0.1;
+                // OUTTAKE: B BUTTON TOGGLE
+                if (gamepad1.b && !bWasPressed) {
+                    outtakeOn = !outtakeOn;
+                }
+                bWasPressed = gamepad1.b;
                 board.setOuttake(outtakeOn);
 
                 // CALIBRATION: A BUTTON

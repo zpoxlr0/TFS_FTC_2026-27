@@ -80,6 +80,7 @@ public class ProgrammingBoard {
         }) {
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
         outtakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -108,6 +109,8 @@ public class ProgrammingBoard {
     }
 
     public void drive(double forward, double strafe, double turn, double speedScale) {
+        turn = turn * (speedScale == 1 ? 1 : 0.67); // experimental thing that will hopefully make turning precision better
+
         double scale = Math.max(
                 1.0,
                 Math.abs(forward) + Math.abs(strafe) + Math.abs(turn)

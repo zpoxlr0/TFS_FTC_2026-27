@@ -180,10 +180,10 @@ public class Unicorn_Auton_B extends OpMode {
                 runStep("ROTATION_TIME", State.M_INIT_DRIVE, 0, 0, -power, false, false, false);
                 break;
             case M_INIT_DRIVE:
-                runStep("INIT_MOVE_TIME", State.M_INIT_REVERSE, power, -power*0.15, 0, true, false, false);
+                runStep("INIT_MOVE_TIME", State.M_INIT_REVERSE, power, 0, 0, true, false, false, 2.0);
                 break;
             case M_INIT_REVERSE:
-                runStep("INIT_MOVE_TIME", State.M_CROSSFIELD_ROTATE, -power, power*0.15, 0, true, false, false, 0.5);
+                runStep("INIT_MOVE_TIME", State.M_CROSSFIELD_ROTATE, -power, 0, 0, true, false, true, 0.7);
                 break;
             case M_CROSSFIELD_ROTATE:
                 runStep("ROTATION_TIME", State.M_CROSSFIELD, 0, 0, power, false, false, false, 0.95);

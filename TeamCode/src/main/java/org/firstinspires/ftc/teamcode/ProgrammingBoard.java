@@ -32,6 +32,7 @@ public class ProgrammingBoard {
     private CRServo rightIntakeServo;
 
     private DcMotor outtakeMotor;
+    private DcMotor counterspinMotor;
     private DcMotor intakeMotor;
     private DcMotor transferMotor;
 
@@ -54,6 +55,8 @@ public class ProgrammingBoard {
 
         outtakeMotor =
                 hardwareMap.get(DcMotor.class, "outtake_motor");
+        counterspinMotor =
+                hardwareMap.get(DcMotor.class, "counterspin_motor");
         intakeMotor =
                 hardwareMap.get(DcMotor.class, "intake_motor");
         transferMotor =
@@ -84,6 +87,7 @@ public class ProgrammingBoard {
         }
 
         outtakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        counterspinMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         IMU imu = null;
 
@@ -140,6 +144,7 @@ public class ProgrammingBoard {
 
     public void setOuttake(boolean outtakeOn) {
         outtakeMotor.setPower(outtakeOn ? 0.67 : 0.0);
+        counterspinMotor.setPower(outtakeOn ? 0.67 : 0.0);
     }
 
     public void setTransfer(boolean transferOn) {

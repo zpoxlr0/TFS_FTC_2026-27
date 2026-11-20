@@ -87,7 +87,7 @@ public class ProgrammingBoard {
         }
 
         outtakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        counterspinMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        counterspinMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         IMU imu = null;
 
@@ -143,8 +143,8 @@ public class ProgrammingBoard {
     }
 
     public void setOuttake(boolean outtakeOn) {
-        outtakeMotor.setPower(outtakeOn ? 0.67 : 0.0);
-        counterspinMotor.setPower(outtakeOn ? 0.67 : 0.0);
+        outtakeMotor.setPower(outtakeOn ? 0.53 : 0.0);
+        counterspinMotor.setPower(outtakeOn ? 0.3 : 0.0);
     }
 
     public void setTransfer(boolean transferOn) {

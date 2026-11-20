@@ -240,6 +240,7 @@ public class Unicorn_Auton_B extends OpMode {
         telemetry.addData("State: ", state);
         telemetry.addData("State Time: ", "%.2f", stateTime.seconds());
         telemetry.addData("State Duration: ", "%.2f", stateDuration);
+        board.reportShooterTelemetry(telemetry);
         telemetry.update();
     }
 

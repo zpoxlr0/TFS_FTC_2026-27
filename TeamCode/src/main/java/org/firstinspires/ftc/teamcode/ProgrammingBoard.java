@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
@@ -31,8 +32,8 @@ public class ProgrammingBoard {
     private CRServo leftIntakeServo;
     private CRServo rightIntakeServo;
 
-    private DcMotor outtakeMotor;
-    private DcMotor counterspinMotor;
+    private DcMotorEx outtakeMotor;
+    private DcMotorEx counterspinMotor;
     private DcMotor intakeMotor;
     private DcMotor transferMotor;
 
@@ -54,9 +55,9 @@ public class ProgrammingBoard {
                 hardwareMap.get(CRServo.class, "right_intake_servo");
 
         outtakeMotor =
-                hardwareMap.get(DcMotor.class, "outtake_motor");
+                hardwareMap.get(DcMotorEx.class, "outtake_motor");
         counterspinMotor =
-                hardwareMap.get(DcMotor.class, "counterspin_motor");
+                hardwareMap.get(DcMotorEx.class, "counterspin_motor");
         intakeMotor =
                 hardwareMap.get(DcMotor.class, "intake_motor");
         transferMotor =
@@ -193,6 +194,7 @@ public class ProgrammingBoard {
 
     public void reportTelemetry(Telemetry telemetry) {
         stampede.reportTelemetry(telemetry);
+        reportShooterTelemetry(telemetry);
 
         telemetry.addData(
                 "Wheel powers (LF/LB/RF/RB)",
@@ -202,6 +204,11 @@ public class ProgrammingBoard {
                 rightFrontDrive.getPower(),
                 rightBackDrive.getPower()
         );
+    }
+
+    public void reportShooterTelemetry(Telemetry telemetry) {
+        telemetry.addData("Outtake velocity (ticks/s)", "%.1f", outtakeMotor.getVelocity());
+        telemetry.addData("Counterspin velocity (ticks/s)", "%.1f", counterspinMotor.getVelocity());
     }
 
     public void stop() {

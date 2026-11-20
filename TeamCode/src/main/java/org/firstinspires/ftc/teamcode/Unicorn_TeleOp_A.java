@@ -29,6 +29,8 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
             telemetry.addLine("LT: Hold full speed");
             telemetry.addLine("B: Toggle outtake ON/OFF");
             telemetry.addLine("A: Reset calibration readings");
+            telemetry.addLine("D-pad up/down: flywheel speed +/-");
+            telemetry.addLine("D-pad right/left: counterroller speed +/-");
 
             board.reportTelemetry(telemetry);
             telemetry.update();
@@ -53,6 +55,10 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
             boolean outtakeOn = false;
             boolean bWasPressed = gamepad1.b;
             boolean aWasPressed = gamepad1.a;
+            boolean upWasPressed = gamepad1.dpad_up;
+            boolean downWasPressed = gamepad1.dpad_down;
+            boolean rightWasPressed = gamepad1.dpad_right;
+            boolean leftWasPressed = gamepad1.dpad_left;
 
             // MAIN TELEOP LOOP
             while (opModeIsActive()) {
@@ -99,6 +105,17 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
                     outtakeOn = !outtakeOn;
                 }
                 bWasPressed = gamepad1.b;
+
+                int outtakeSteps = (gamepad1.dpad_up && !upWasPressed ? 1 : 0)
+                        - (gamepad1.dpad_down && !downWasPressed ? 1 : 0);
+                int counterspinSteps = (gamepad1.dpad_right && !rightWasPressed ? 1 : 0)
+                        - (gamepad1.dpad_left && !leftWasPressed ? 1 : 0);
+                upWasPressed = gamepad1.dpad_up;
+                downWasPressed = gamepad1.dpad_down;
+                rightWasPressed = gamepad1.dpad_right;
+                leftWasPressed = gamepad1.dpad_left;
+                board.adjustOuttakeVelocity(outtakeSteps);
+                board.adjustCounterspinVelocity(counterspinSteps);
                 board.setOuttake(outtakeOn);
 
                 // CALIBRATION: A BUTTON

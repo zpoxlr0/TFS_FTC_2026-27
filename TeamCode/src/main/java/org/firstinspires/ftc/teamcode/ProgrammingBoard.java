@@ -11,6 +11,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class ProgrammingBoard {
 
+    private static final double OUTTAKE_INITIAL_SPEED = 0.63;
+    private static final double COUNTERSPIN_INITIAL_SPEED = 0.30;
+    private static final double SHOOTER_SPEED_STEP = 0.05;
+    private static final double MAX_HUB_VELOCITY = 32767.0;
+
     // Replace null after identifying the direction the broad REV-logo face points.
     public static final RevHubOrientationOnRobot.LogoFacingDirection
             HUB_LOGO_FACING =
@@ -38,6 +43,10 @@ public class ProgrammingBoard {
     private DcMotor transferMotor;
 
     private boolean intakeOn = false;
+    private double outtakeMaxVelocity;
+    private double counterspinMaxVelocity;
+    private double outtakeTargetVelocity;
+    private double counterspinTargetVelocity;
 
     public void init(HardwareMap hardwareMap) {
         leftFrontDrive =
@@ -62,6 +71,13 @@ public class ProgrammingBoard {
                 hardwareMap.get(DcMotor.class, "intake_motor");
         transferMotor =
                 hardwareMap.get(DcMotor.class, "transfer_motor");
+
+        outtakeMaxVelocity = Math.min(MAX_HUB_VELOCITY,
+                outtakeMotor.getMotorType().getAchieveableMaxTicksPerSecondRounded());
+        counterspinMaxVelocity = Math.min(MAX_HUB_VELOCITY,
+                counterspinMotor.getMotorType().getAchieveableMaxTicksPerSecondRounded());
+        outtakeTargetVelocity = (int) (OUTTAKE_INITIAL_SPEED * outtakeMaxVelocity);
+        counterspinTargetVelocity = (int) (COUNTERSPIN_INITIAL_SPEED * counterspinMaxVelocity);
 
         // Preserved from your original ProgrammingBoard.
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -144,8 +160,18 @@ public class ProgrammingBoard {
     }
 
     public void setOuttake(boolean outtakeOn) {
-        outtakeMotor.setPower(outtakeOn ? 0.53 : 0.0);
-        counterspinMotor.setPower(outtakeOn ? 0.3 : 0.0);
+        outtakeMotor.setVelocity(outtakeOn ? outtakeTargetVelocity : 0.0);
+        counterspinMotor.setVelocity(outtakeOn ? counterspinTargetVelocity : 0.0);
+    }
+
+    public void adjustOuttakeVelocity(int steps) {
+        outtakeTargetVelocity = Math.max(0, Math.min(outtakeMaxVelocity,
+                outtakeTargetVelocity + steps * SHOOTER_SPEED_STEP * outtakeMaxVelocity));
+    }
+
+    public void adjustCounterspinVelocity(int steps) {
+        counterspinTargetVelocity = Math.max(0, Math.min(counterspinMaxVelocity,
+                counterspinTargetVelocity + steps * SHOOTER_SPEED_STEP * counterspinMaxVelocity));
     }
 
     public void setTransfer(boolean transferOn) {
@@ -207,7 +233,9 @@ public class ProgrammingBoard {
     }
 
     public void reportShooterTelemetry(Telemetry telemetry) {
+        telemetry.addData("Outtake target (ticks/s)", "%.1f", outtakeTargetVelocity);
         telemetry.addData("Outtake velocity (ticks/s)", "%.1f", outtakeMotor.getVelocity());
+        telemetry.addData("Counterspin target (ticks/s)", "%.1f", counterspinTargetVelocity);
         telemetry.addData("Counterspin velocity (ticks/s)", "%.1f", counterspinMotor.getVelocity());
     }
 

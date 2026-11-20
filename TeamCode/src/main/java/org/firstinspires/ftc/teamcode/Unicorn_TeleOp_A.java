@@ -59,6 +59,8 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
             boolean downWasPressed = gamepad1.dpad_down;
             boolean rightWasPressed = gamepad1.dpad_right;
             boolean leftWasPressed = gamepad1.dpad_left;
+            int outtakeAdjustments = 0;
+            int counterspinAdjustments = 0;
 
             // MAIN TELEOP LOOP
             while (opModeIsActive()) {
@@ -114,8 +116,12 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
                 downWasPressed = gamepad1.dpad_down;
                 rightWasPressed = gamepad1.dpad_right;
                 leftWasPressed = gamepad1.dpad_left;
-                board.adjustOuttakeVelocity(outtakeSteps);
-                board.adjustCounterspinVelocity(counterspinSteps);
+                if (board.adjustOuttakeVelocity(outtakeSteps)) {
+                    outtakeAdjustments += outtakeSteps;
+                }
+                if (board.adjustCounterspinVelocity(counterspinSteps)) {
+                    counterspinAdjustments += counterspinSteps;
+                }
                 board.setOuttake(outtakeOn);
 
                 // CALIBRATION: A BUTTON
@@ -158,6 +164,8 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
                         speedScale == 1.0 ? "100%" : "70%"
                 );
 
+                telemetry.addData("Flywheel net adjustments", "%+d", outtakeAdjustments);
+                telemetry.addData("Counterroller net adjustments", "%+d", counterspinAdjustments);
                 board.reportTelemetry(telemetry);
                 telemetry.update();
 

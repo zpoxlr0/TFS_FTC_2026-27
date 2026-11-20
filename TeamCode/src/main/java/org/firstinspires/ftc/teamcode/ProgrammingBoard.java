@@ -164,14 +164,18 @@ public class ProgrammingBoard {
         counterspinMotor.setVelocity(outtakeOn ? counterspinTargetVelocity : 0.0);
     }
 
-    public void adjustOuttakeVelocity(int steps) {
+    public boolean adjustOuttakeVelocity(int steps) {
+        double previousVelocity = outtakeTargetVelocity;
         outtakeTargetVelocity = Math.max(0, Math.min(outtakeMaxVelocity,
                 outtakeTargetVelocity + steps * SHOOTER_SPEED_STEP * outtakeMaxVelocity));
+        return outtakeTargetVelocity != previousVelocity;
     }
 
-    public void adjustCounterspinVelocity(int steps) {
+    public boolean adjustCounterspinVelocity(int steps) {
+        double previousVelocity = counterspinTargetVelocity;
         counterspinTargetVelocity = Math.max(0, Math.min(counterspinMaxVelocity,
                 counterspinTargetVelocity + steps * SHOOTER_SPEED_STEP * counterspinMaxVelocity));
+        return counterspinTargetVelocity != previousVelocity;
     }
 
     public void setTransfer(boolean transferOn) {

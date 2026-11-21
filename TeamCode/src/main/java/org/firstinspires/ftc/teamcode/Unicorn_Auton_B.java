@@ -32,6 +32,7 @@ public class Unicorn_Auton_B extends OpMode {
         // to half tip the second hive. Experimentally, we will shoot from an angle as to not disturb
         // our teammate's auton.
         M_TURN,
+        M_WAIT,
         M_INIT_DRIVE,
         M_INIT_REVERSE,
         M_CROSSFIELD_ROTATE,
@@ -66,12 +67,12 @@ public class Unicorn_Auton_B extends OpMode {
         TUNABLE_VALUES.put("ALLIANCE_ZERO_RED_ZEROONE_BLUE", 0.0); // alliance, 0.0 is red, 0.1 is blue
         TUNABLE_VALUES.put("INIT_MOVE_TIME", 1.0); // how long to move to 1st hive
         TUNABLE_VALUES.put("ROTATION_TIME", 0.5); // how long to rotate for (forwards and backwards)
-        TUNABLE_VALUES.put("REVERSE_TIME", 0.5); // how long to reverse for
+        TUNABLE_VALUES.put("REVERSE_TIME", 0.4); // how long to reverse for
         TUNABLE_VALUES.put("REV_TIME", 3.0); // how long to rev for before turning the transfer
         TUNABLE_VALUES.put("TRANSFER_TIME", 5.0); // how long to run the transfer
         TUNABLE_VALUES.put("FLOWER_P1_TIME", 0.3); // how long to move forward toward the flower
         TUNABLE_VALUES.put("FLOWER_P2_TIME", 1.0); // how long to strafe while collecting from the flower
-        TUNABLE_VALUES.put("SLIGHT_ADJUST_TIME", 0.1); // slight adjust at start of strat 1 in LEAVE_HIVE
+        TUNABLE_VALUES.put("SLIGHT_ADJUST_TIME", 0.05); // slight adjust at start of strat 1 in LEAVE_HIVE
     }
 
     private static final String[] TUNABLES =
@@ -177,13 +178,16 @@ public class Unicorn_Auton_B extends OpMode {
 
             // STRAT 1 //
             case M_TURN:
-                runStep("ROTATION_TIME", State.M_INIT_DRIVE, 0, 0, -power, false, false, false);
+                runStep("ROTATION_TIME", State.M_WAIT, 0, 0, -power, false, false, false);
+                break;
+            case M_WAIT:
+                runStep("ROTATION_TIME", State.M_INIT_DRIVE, 0, 0, 0, false, false, false);
                 break;
             case M_INIT_DRIVE:
                 runStep("INIT_MOVE_TIME", State.M_INIT_REVERSE, power, 0, 0, true, false, false, 2.0);
                 break;
             case M_INIT_REVERSE:
-                runStep("INIT_MOVE_TIME", State.M_CROSSFIELD_ROTATE, -power, 0, 0, true, false, true, 0.7);
+                runStep("INIT_MOVE_TIME", State.M_CROSSFIELD_ROTATE, -power, 0, 0, true, false, true, 0.5);
                 break;
             case M_CROSSFIELD_ROTATE:
                 runStep("ROTATION_TIME", State.M_CROSSFIELD, 0, 0, power, false, false, false, 0.95);

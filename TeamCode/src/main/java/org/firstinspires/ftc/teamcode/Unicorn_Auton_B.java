@@ -63,6 +63,9 @@ public class Unicorn_Auton_B extends OpMode {
 
     static {
         TUNABLE_VALUES.put("DRIVE_POWER", 0.7);
+        TUNABLE_VALUES.put("FLYWHEEL_ADJUST", 0.0);
+        TUNABLE_VALUES.put("COUNTERROLLER_ADJUST", 0.0);
+        TUNABLE_VALUES.put("START_DELAY", 0.0); // wait before starting, each 0.1 = 1 second
         TUNABLE_VALUES.put("STRAT", 0.1); // strat, 0.1 is regular (no delay), 0.2 is delay
         TUNABLE_VALUES.put("ALLIANCE_ZERO_RED_ZEROONE_BLUE", 0.0); // alliance, 0.0 is red, 0.1 is blue
         TUNABLE_VALUES.put("INIT_MOVE_TIME", 1.0); // how long to move to 1st hive
@@ -105,13 +108,17 @@ public class Unicorn_Auton_B extends OpMode {
 
         String selected = TUNABLES[TUNABLE_SETTING];
         double value = TUNABLE_VALUES.get(selected);
+        boolean shooterAdjustment = selected.equals("FLYWHEEL_ADJUST")
+                || selected.equals("COUNTERROLLER_ADJUST");
 
         if (gamepad1.dpad_right && !rightWasPressed) {
             double max = selected.equals("DRIVE_POWER") ? 1.0
-                    : selected.equals("ALLIANCE_ZERO_RED_ZEROONE_BLUE") ? 0.1 : Double.MAX_VALUE;
+                    : selected.equals("ALLIANCE_ZERO_RED_ZEROONE_BLUE") ? 0.1
+                    : selected.equals("START_DELAY") ? 3.0
+                    : shooterAdjustment ? 1.0 : Double.MAX_VALUE;
             value = Math.min(max, value + 0.1);
         } else if (gamepad1.dpad_left && !leftWasPressed) {
-            value = Math.max(0.0, value - 0.1);
+            value = Math.max(shooterAdjustment ? -1.0 : 0.0, value - 0.1);
         }
 
         leftWasPressed = gamepad1.dpad_left;
@@ -120,12 +127,14 @@ public class Unicorn_Auton_B extends OpMode {
 
         telemetry.addLine("DPAD up/down for selecting setting");
         telemetry.addLine("DPAD left/right for adjusting value");
+        telemetry.addLine("Shooter adjust: each 0.1 = one 5% max-speed step");
         telemetry.addLine("-----------------------------------");
         telemetry.addData("Setting number", "%d / %d", TUNABLE_SETTING + 1, TUNABLES.length);
         telemetry.addData(selected, "%.1f", value);
         telemetry.addLine("-----------------------------------");
         telemetry.addData("Alliance", TUNABLE_VALUES.get("ALLIANCE_ZERO_RED_ZEROONE_BLUE") >= 0.05
                 ? "BLUE" : "RED");
+        telemetry.addData("Start delay", "%.0f s", TUNABLE_VALUES.get("START_DELAY") * 10.0);
         telemetry.addData("Strat", TUNABLE_VALUES.get("STRAT") >= 0.15 ? "2 - TIPPED SIDE" : "1 - UNTIPPED SIDE");
         telemetry.update();
     }
@@ -135,6 +144,11 @@ public class Unicorn_Auton_B extends OpMode {
         runtime.reset();
         stateTime.reset();
         state = State.DELAY_START;
+        // Match the TeleOp adjustment size: each 0.1 setting increment is one step.
+        board.adjustOuttakeVelocity((int) Math.round(
+                TUNABLE_VALUES.get("FLYWHEEL_ADJUST") * 10.0));
+        board.adjustCounterspinVelocity((int) Math.round(
+                TUNABLE_VALUES.get("COUNTERROLLER_ADJUST") * 10.0));
     }
 
     @Override
@@ -144,7 +158,7 @@ public class Unicorn_Auton_B extends OpMode {
         switch (state) {
             // INIT STATE //
             case DELAY_START:
-                transitionTo(State.FIRST_SPIN_UP);
+                runStep("START_DELAY", State.FIRST_SPIN_UP, 0, 0, 0, false, false, false, 10.0);
                 break;
 
             // Unused, keep in case we need it again.
@@ -184,7 +198,7 @@ public class Unicorn_Auton_B extends OpMode {
                 runStep("ROTATION_TIME", State.M_INIT_DRIVE, 0, 0, 0, false, false, false);
                 break;
             case M_INIT_DRIVE:
-                runStep("INIT_MOVE_TIME", State.M_INIT_REVERSE, power, 0, 0, true, false, false, 2.0);
+                runStep("INIT_MOVE_TIME", State.M_INIT_REVERSE, power, 0, 0, true, false, false, 1.7);
                 break;
             case M_INIT_REVERSE:
                 runStep("INIT_MOVE_TIME", State.M_CROSSFIELD_ROTATE, -power, 0, 0, true, false, true, 0.5);

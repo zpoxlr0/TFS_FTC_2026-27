@@ -29,6 +29,7 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
             telemetry.addLine("LT: Hold full speed");
             telemetry.addLine("B: Toggle outtake ON/OFF");
             telemetry.addLine("A: Reset calibration readings");
+            telemetry.addLine("X: EMERGENCY // Reverse intake and transfer");
             telemetry.addLine("D-pad up/down: flywheel speed +/-");
             telemetry.addLine("D-pad right/left: counterroller speed +/-");
 
@@ -127,6 +128,12 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
                 // CALIBRATION: A BUTTON
                 if (gamepad1.a && !aWasPressed) {
                     board.resetCalibrationReadings();
+                }
+
+                // EMERGENCY REVERSE INTAKE/TRANSFER: X BUTTON
+                if (gamepad1.x) {
+                    board.setIntake(true, true);
+                    board.setTransfer(true, true);
                 }
 
                 aWasPressed = gamepad1.a;

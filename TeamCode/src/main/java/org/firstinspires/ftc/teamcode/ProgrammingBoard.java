@@ -151,12 +151,21 @@ public class ProgrammingBoard {
         );
     }
 
-    public void setIntake(boolean intakeOn) {
+    public void setIntake(boolean intakeOn, boolean reverse) {
         this.intakeOn = intakeOn;
 
         leftIntakeServo.setPower(intakeOn ? -1.0 : 0.0);
         rightIntakeServo.setPower(intakeOn ? 1.0 : 0.0);
-        intakeMotor.setPower(intakeOn ? 1.0 : 0.0);
+
+        if (reverse) {
+            intakeMotor.setPower(intakeOn ? -1.0 : 0.0);
+        } else {
+            intakeMotor.setPower(intakeOn ? 1.0 : 0.0);
+        }
+    }
+
+    public void setIntake(boolean intakeOn) {
+        setIntake(intakeOn, false);
     }
 
     public void setOuttake(boolean outtakeOn) {
@@ -178,8 +187,16 @@ public class ProgrammingBoard {
         return counterspinTargetVelocity != previousVelocity;
     }
 
+    public void setTransfer(boolean transferOn, boolean reverse) {
+        if (reverse) {
+            transferMotor.setPower(transferOn ? -1.0 : 0.0);
+        } else {
+            transferMotor.setPower(transferOn ? 1.0 : 0.0);
+        }
+    }
+
     public void setTransfer(boolean transferOn) {
-        transferMotor.setPower(transferOn ? 1.0 : 0.0);
+        setTransfer(transferOn, false);
     }
 
     public double getLeftPower() {

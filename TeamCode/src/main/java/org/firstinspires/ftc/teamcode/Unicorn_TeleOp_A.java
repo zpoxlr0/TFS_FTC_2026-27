@@ -109,14 +109,14 @@ public class Unicorn_TeleOp_A extends LinearOpMode {
                 }
                 bWasPressed = gamepad1.b;
 
-                int outtakeSteps = (gamepad1.dpad_up && !upWasPressed ? 1 : 0)
-                        - (gamepad1.dpad_down && !downWasPressed ? 1 : 0);
-                int counterspinSteps = (gamepad1.dpad_right && !rightWasPressed ? 1 : 0)
-                        - (gamepad1.dpad_left && !leftWasPressed ? 1 : 0);
-                upWasPressed = gamepad1.dpad_up;
-                downWasPressed = gamepad1.dpad_down;
-                rightWasPressed = gamepad1.dpad_right;
-                leftWasPressed = gamepad1.dpad_left;
+                int outtakeSteps = (gamepad2.dpad_up && !upWasPressed ? 1 : 0)
+                        - (gamepad2.dpad_down && !downWasPressed ? 1 : 0);
+                int counterspinSteps = (gamepad2.dpad_right && !rightWasPressed ? 1 : 0)
+                        - (gamepad2.dpad_left && !leftWasPressed ? 1 : 0);
+                upWasPressed = gamepad2.dpad_up;
+                downWasPressed = gamepad2.dpad_down;
+                rightWasPressed = gamepad2.dpad_right;
+                leftWasPressed = gamepad2.dpad_left;
                 if (board.adjustOuttakeVelocity(outtakeSteps)) {
                     outtakeAdjustments += outtakeSteps;
                 }

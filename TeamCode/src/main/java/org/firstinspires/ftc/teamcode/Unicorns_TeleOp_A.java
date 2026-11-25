@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "Unicorn TeleOp A")
+@TeleOp(name = "Unicorns TeleOp A", group = "Unicorns")
 public class Unicorns_TeleOp_A extends LinearOpMode {
 
     private final Unicorns_ProgrammingBoard board = new Unicorns_ProgrammingBoard();

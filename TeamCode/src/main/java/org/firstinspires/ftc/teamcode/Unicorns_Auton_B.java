@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@Autonomous(name = "Unicorn Auton B")
+@Autonomous(name = "Unicorns Auton B", group = "Unicorns")
 public class Unicorns_Auton_B extends OpMode {
     // VARIABLES //
     // programming board

@@ -65,7 +65,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * continuously checking for conditions that allow us to move to the next step.
  */
 
-@Autonomous(name = "StarterBotAuto", group = "StarterBot")
+@Autonomous(name = "Narwhals Auton A", group = "Narwhals")
 //@Disabled
 public class Narwhals_Auton_A extends OpMode {
 

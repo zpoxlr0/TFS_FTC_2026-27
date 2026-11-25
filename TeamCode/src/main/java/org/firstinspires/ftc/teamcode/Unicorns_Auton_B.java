@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Autonomous(name = "Unicorn Auton B")
-public class Unicorn_Auton_B extends OpMode {
+public class Unicorns_Auton_B extends OpMode {
     // VARIABLES //
     // programming board
     private final Unicorns_ProgrammingBoard board = new Unicorns_ProgrammingBoard();

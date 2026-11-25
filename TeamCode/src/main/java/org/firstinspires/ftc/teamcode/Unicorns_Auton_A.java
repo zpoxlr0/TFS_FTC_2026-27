@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Autonomous(name = "Unicorn Auton A")
-public class Unicorn_Auton_A extends LinearOpMode {
+public class Unicorns_Auton_A extends LinearOpMode {
 
     private DcMotor leftFrontDrive;
     private DcMotor leftBackDrive;

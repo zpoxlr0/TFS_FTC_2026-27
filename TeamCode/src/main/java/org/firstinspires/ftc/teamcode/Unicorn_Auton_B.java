@@ -11,7 +11,7 @@ import java.util.Map;
 public class Unicorn_Auton_B extends OpMode {
     // VARIABLES //
     // programming board
-    private final ProgrammingBoard board = new ProgrammingBoard();
+    private final Unicorns_ProgrammingBoard board = new Unicorns_ProgrammingBoard();
 
     // the very important ElapsedTime which is very important until we actually can do auto calibration
     private final ElapsedTime runtime = new ElapsedTime();

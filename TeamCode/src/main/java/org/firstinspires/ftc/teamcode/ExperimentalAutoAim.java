@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name = "Unicorn_TeleOp_AutoAim")
 public class ExperimentalAutoAim extends LinearOpMode {
 
-    private final ProgrammingBoard board = new ProgrammingBoard();
+    private final Unicorns_ProgrammingBoard board = new Unicorns_ProgrammingBoard();
     private final ElapsedTime aimTimer = new ElapsedTime();
 
     // Walls viewed from the audience.

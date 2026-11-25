@@ -64,7 +64,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Autonomous(name="StarterBotAuto", group="StarterBot")
 //@Disabled
-public class StarterBotAuto extends OpMode
+public class Narwhals_Auton_A extends OpMode
 {
     /*
      * These two variables are used to control the velocity of the launcher motor.

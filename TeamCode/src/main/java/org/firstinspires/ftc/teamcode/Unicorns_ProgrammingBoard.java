@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class ProgrammingBoard {
+public class Unicorns_ProgrammingBoard {
 
     private static final double OUTTAKE_INITIAL_SPEED = 0.63;
     private static final double COUNTERSPIN_INITIAL_SPEED = 0.30;

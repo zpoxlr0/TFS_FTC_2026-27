@@ -32,7 +32,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 @TeleOp(name = "BioBuzz StarterBot Teleop", group = "StarterBot")
-public class BioBuzzStarterBotTeleop extends OpMode {
+public class Narwhals_TeleOp_A extends OpMode {
 
     private DcMotor frontLeftMotor;
     private DcMotor backLeftMotor;

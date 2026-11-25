@@ -81,10 +81,11 @@ public class Narwhals_TeleOp_A extends OpMode {
 
         // StarterBot direction convention.
         // Each motor can now be adjusted independently.
+
         frontLeftMotor.setDirection(DcMotor.Direction.FORWARD);
-        backLeftMotor.setDirection(DcMotor.Direction.FORWARD);
+        backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        backRightMotor.setDirection(DcMotor.Direction.FORWARD);
 
         for (DcMotor motor : new DcMotor[]{
                 frontLeftMotor,

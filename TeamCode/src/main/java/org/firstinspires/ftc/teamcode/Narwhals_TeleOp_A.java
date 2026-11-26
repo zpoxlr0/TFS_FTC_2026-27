@@ -46,7 +46,7 @@ public class Narwhals_TeleOp_A extends OpMode {
     private CRServo leftIntake;
     private CRServo rightIntake;
 
-    private static final int LAUNCHER_TARGET_VELOCITY = 1500;
+    private static final int LAUNCHER_TARGET_VELOCITY = 1500; //test
     private static final int LAUNCHER_MIN_VELOCITY = 1400;
 
     private double frontLeftPower;

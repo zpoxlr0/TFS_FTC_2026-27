@@ -1,13 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
 @TeleOp(name = "Unicorns TeleOp A", group = "Unicorns")
 public class Unicorns_TeleOp_A extends LinearOpMode {
 
     private final Unicorns_ProgrammingBoard board = new Unicorns_ProgrammingBoard();
+    private final FtcDashboard dashboard = FtcDashboard.getInstance();
     private final ElapsedTime runtime = new ElapsedTime();
 
     // Starting position for tracking
@@ -30,8 +33,8 @@ public class Unicorns_TeleOp_A extends LinearOpMode {
             telemetry.addLine("B: Toggle outtake ON/OFF");
             telemetry.addLine("A: Reset calibration readings");
             telemetry.addLine("X: EMERGENCY // Reverse intake and transfer");
-            telemetry.addLine("D-pad up/down: flywheel speed +/-");
-            telemetry.addLine("D-pad right/left: counterroller speed +/-");
+            telemetry.addLine("P2: D-pad up/down: flywheel speed +/-");
+            telemetry.addLine("P2: D-pad right/left: counterroller speed +/-");
 
             board.reportTelemetry(telemetry);
             telemetry.update();
@@ -56,10 +59,10 @@ public class Unicorns_TeleOp_A extends LinearOpMode {
             boolean outtakeOn = false;
             boolean bWasPressed = gamepad1.b;
             boolean aWasPressed = gamepad1.a;
-            boolean upWasPressed = gamepad1.dpad_up;
-            boolean downWasPressed = gamepad1.dpad_down;
-            boolean rightWasPressed = gamepad1.dpad_right;
-            boolean leftWasPressed = gamepad1.dpad_left;
+            boolean upWasPressed = gamepad2.dpad_up;
+            boolean downWasPressed = gamepad2.dpad_down;
+            boolean rightWasPressed = gamepad2.dpad_right;
+            boolean leftWasPressed = gamepad2.dpad_left;
             int outtakeAdjustments = 0;
             int counterspinAdjustments = 0;
 
@@ -74,7 +77,7 @@ public class Unicorns_TeleOp_A extends LinearOpMode {
                 double turn = gamepad1.left_stick_x;
                 double strafe = gamepad1.right_stick_x;
 
-                // RT = full speed (100%)
+                // LT = full speed (100%)
                 // Otherwise 70%
                 double speedScale =
                         gamepad1.left_trigger > 0.1 ? 1.0 : 0.7;
@@ -175,6 +178,14 @@ public class Unicorns_TeleOp_A extends LinearOpMode {
                 telemetry.addData("Counterroller net adjustments", "%+d", counterspinAdjustments);
                 board.reportTelemetry(telemetry);
                 telemetry.update();
+
+                // FTC DASHBOARD TELEMETRY
+                TelemetryPacket packet = new TelemetryPacket();
+//                packet.fieldOverlay()
+//                        .setFill("white")
+//                        .fillRect(-72, -72, 144, 144);
+                packet.fieldOverlay().drawImage("/images/eyqmnhza25ph1.png", 0, 0, 144, 144);
+                dashboard.sendTelemetryPacket(packet);
 
                 idle();
             }

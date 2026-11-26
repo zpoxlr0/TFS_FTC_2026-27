@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -187,6 +188,55 @@ public class Unicorns_ProgrammingBoard {
         counterspinTargetVelocity = Math.max(0, Math.min(counterspinMaxVelocity,
                 counterspinTargetVelocity + steps * SHOOTER_SPEED_STEP * counterspinMaxVelocity));
         return counterspinTargetVelocity != previousVelocity;
+    }
+
+    public double getOuttakeTargetVelocity() {
+        return outtakeTargetVelocity;
+    }
+
+    public double getOuttakeVelocity() {
+        return outtakeMotor.getVelocity();
+    }
+
+    public double getCounterspinTargetVelocity() {
+        return counterspinTargetVelocity;
+    }
+
+    public double getCounterspinVelocity() {
+        return counterspinMotor.getVelocity();
+    }
+
+    public void loadShooterPidForTuning() {
+        PIDFCoefficients outtake =
+                outtakeMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        PIDFCoefficients counterspin =
+                counterspinMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        ShooterPidTuning.outtakeP = outtake.p;
+        ShooterPidTuning.outtakeI = outtake.i;
+        ShooterPidTuning.outtakeD = outtake.d;
+        ShooterPidTuning.outtakeF = outtake.f;
+
+        ShooterPidTuning.counterspinP = counterspin.p;
+        ShooterPidTuning.counterspinI = counterspin.i;
+        ShooterPidTuning.counterspinD = counterspin.d;
+        ShooterPidTuning.counterspinF = counterspin.f;
+        ShooterPidTuning.apply = false;
+    }
+
+    public void applyShooterPidTuning() {
+        outtakeMotor.setVelocityPIDFCoefficients(
+                ShooterPidTuning.outtakeP,
+                ShooterPidTuning.outtakeI,
+                ShooterPidTuning.outtakeD,
+                ShooterPidTuning.outtakeF
+        );
+        counterspinMotor.setVelocityPIDFCoefficients(
+                ShooterPidTuning.counterspinP,
+                ShooterPidTuning.counterspinI,
+                ShooterPidTuning.counterspinD,
+                ShooterPidTuning.counterspinF
+        );
     }
 
     public void setTransfer(boolean transferOn, boolean reverse) {

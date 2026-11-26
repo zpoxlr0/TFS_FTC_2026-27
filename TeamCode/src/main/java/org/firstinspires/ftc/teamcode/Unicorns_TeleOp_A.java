@@ -14,14 +14,15 @@ public class Unicorns_TeleOp_A extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
 
     // Starting position for tracking
-    private static final double START_X = 0;
-    private static final double START_Y = 0;
+    private static final double START_X = -72;
+    private static final double START_Y = -72;
     private static final double START_HEADING = 0;
 
     @Override
     public void runOpMode() {
 
         board.init(hardwareMap);
+        board.loadShooterPidForTuning();
 
         try {
 
@@ -45,11 +46,19 @@ public class Unicorns_TeleOp_A extends LinearOpMode {
                 return;
             }
 
-            board.setFieldPosition(
-                    START_X,
-                    START_Y,
-                    START_HEADING
-            );
+//            board.setFieldPosition(
+//                    START_X,
+//                    START_Y,
+//                    START_HEADING
+//            );
+            SavedPose.Pose saved = SavedPose.consume();
+
+            if (saved != null) {
+                board.setFieldPosition(saved.x, saved.y, saved.heading);
+            } else {
+                // Must match the robot's actual starting pose if autonomous was not run.
+                board.setFieldPosition(START_X, START_Y, START_HEADING);
+            }
 
             board.resetCalibrationReadings();
             runtime.reset();
@@ -126,6 +135,10 @@ public class Unicorns_TeleOp_A extends LinearOpMode {
                 if (board.adjustCounterspinVelocity(counterspinSteps)) {
                     counterspinAdjustments += counterspinSteps;
                 }
+                if (ShooterPidTuning.apply) {
+                    board.applyShooterPidTuning();
+                    ShooterPidTuning.apply = false;
+                }
                 board.setOuttake(outtakeOn);
 
                 // CALIBRATION: A BUTTON
@@ -181,10 +194,35 @@ public class Unicorns_TeleOp_A extends LinearOpMode {
 
                 // FTC DASHBOARD TELEMETRY
                 TelemetryPacket packet = new TelemetryPacket();
-//                packet.fieldOverlay()
-//                        .setFill("white")
-//                        .fillRect(-72, -72, 144, 144);
-                packet.fieldOverlay().drawImage("/images/eyqmnhza25ph1.png", 0, 0, 144, 144);
+
+                packet.fieldOverlay()
+                        .drawImage("/images/eyqmnhza25ph1.png", 0, 0, 144, 144);
+
+                if (board.isTrackingReady()) {
+                    double x = board.getX();
+                    double y = board.getY();
+                    double heading = Math.toRadians(board.getHeading());
+                    double radius = 9.0; // Adjust to roughly half your robot's width, in inches.
+
+                    packet.fieldOverlay()
+                            .setStroke("blue")
+                            .strokeCircle(x, y, radius)
+                            .strokeLine(
+                                    x, y,
+                                    x + radius * Math.cos(heading),
+                                    y + radius * Math.sin(heading)
+                            );
+
+                    packet.put("robotX", x);
+                    packet.put("robotY", y);
+                    packet.put("robotHeadingDeg", board.getHeading());
+                }
+
+                packet.put("outtakeTarget", outtakeOn ? board.getOuttakeTargetVelocity() : 0);
+                packet.put("outtakeActual", board.getOuttakeVelocity());
+                packet.put("counterspinTarget", outtakeOn ? board.getCounterspinTargetVelocity() : 0);
+                packet.put("counterspinActual", board.getCounterspinVelocity());
+
                 dashboard.sendTelemetryPacket(packet);
 
                 idle();

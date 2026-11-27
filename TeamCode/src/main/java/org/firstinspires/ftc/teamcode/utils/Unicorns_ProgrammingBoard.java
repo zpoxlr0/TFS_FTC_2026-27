@@ -16,8 +16,8 @@ import org.firstinspires.ftc.teamcode.ShooterPidTuning;
 
 public class Unicorns_ProgrammingBoard {
 
-    private static final double OUTTAKE_INITIAL_SPEED = 0.63;
-    private static final double COUNTERSPIN_INITIAL_SPEED = 0.15;
+    private static final double OUTTAKE_INITIAL_SPEED = 0.67;
+    private static final double COUNTERSPIN_INITIAL_SPEED = 0.61;
     private static final double SHOOTER_SPEED_STEP = 0.05;
     private static final double MAX_HUB_VELOCITY = 32767.0;
 

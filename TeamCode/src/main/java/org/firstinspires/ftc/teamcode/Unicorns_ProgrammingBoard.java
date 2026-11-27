@@ -212,6 +212,7 @@ public class Unicorns_ProgrammingBoard {
         PIDFCoefficients counterspin =
                 counterspinMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        // TODO: Change these values to the actual PIDF constants when we find them.
         ShooterPidTuning.outtakeP = outtake.p;
         ShooterPidTuning.outtakeI = outtake.i;
         ShooterPidTuning.outtakeD = outtake.d;

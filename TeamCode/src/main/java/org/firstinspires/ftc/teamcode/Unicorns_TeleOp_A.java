@@ -74,6 +74,7 @@ public class Unicorns_TeleOp_A extends LinearOpMode {
             boolean leftWasPressed = gamepad2.dpad_left;
             int outtakeAdjustments = 0;
             int counterspinAdjustments = 0;
+            String shooterSpeedStatus = "No Dashboard speed update yet";
 
             // MAIN TELEOP LOOP
             while (opModeIsActive()) {
@@ -129,6 +130,7 @@ public class Unicorns_TeleOp_A extends LinearOpMode {
                 downWasPressed = gamepad2.dpad_down;
                 rightWasPressed = gamepad2.dpad_right;
                 leftWasPressed = gamepad2.dpad_left;
+
                 if (board.adjustOuttakeVelocity(outtakeSteps)) {
                     outtakeAdjustments += outtakeSteps;
                 }
@@ -139,6 +141,22 @@ public class Unicorns_TeleOp_A extends LinearOpMode {
                     board.applyShooterPidTuning();
                     ShooterPidTuning.apply = false;
                 }
+                if (ShooterPidTuning.applySpeed) {
+                    double flywheel = ShooterPidTuning.flywheelSpeed;
+                    double counterroller = ShooterPidTuning.counterrollerSpeed;
+
+                    if (Double.isFinite(flywheel) && flywheel >= 0 && flywheel <= 1
+                            && Double.isFinite(counterroller)
+                            && counterroller >= 0 && counterroller <= 1) {
+                        board.setShooterSpeedFractions(flywheel, counterroller);
+                        shooterSpeedStatus = "Dashboard speeds applied";
+                    } else {
+                        shooterSpeedStatus = "Error: both shooter speeds must be between 0 and 1";
+                    }
+
+                    ShooterPidTuning.applySpeed = false;
+                }
+
                 board.setOuttake(outtakeOn);
 
                 // CALIBRATION: A BUTTON
@@ -218,6 +236,7 @@ public class Unicorns_TeleOp_A extends LinearOpMode {
                     packet.put("robotHeadingDeg", board.getHeading());
                 }
 
+                packet.put("Shooter speed status", shooterSpeedStatus);
                 packet.put("outtakeTarget", outtakeOn ? board.getOuttakeTargetVelocity() : 0);
                 packet.put("outtakeActual", board.getOuttakeVelocity());
                 packet.put("counterspinTarget", outtakeOn ? board.getCounterspinTargetVelocity() : 0);

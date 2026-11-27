@@ -190,6 +190,18 @@ public class Unicorns_ProgrammingBoard {
         return counterspinTargetVelocity != previousVelocity;
     }
 
+    // FTC dashboard adjustments //
+    public void setShooterSpeedFractions(double flywheel, double counterroller) {
+        if (!Double.isFinite(flywheel) || flywheel < 0 || flywheel > 1
+                || !Double.isFinite(counterroller)
+                || counterroller < 0 || counterroller > 1) {
+            throw new IllegalArgumentException("Shooter speeds must be between 0 and 1");
+        }
+
+        outtakeTargetVelocity = flywheel * outtakeMaxVelocity;
+        counterspinTargetVelocity = counterroller * counterspinMaxVelocity;
+    }
+
     public double getOuttakeTargetVelocity() {
         return outtakeTargetVelocity;
     }

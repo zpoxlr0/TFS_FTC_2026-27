@@ -201,6 +201,9 @@ public class Unicorns_ProgrammingBoard {
 
         outtakeTargetVelocity = flywheel * outtakeMaxVelocity;
         counterspinTargetVelocity = counterroller * counterspinMaxVelocity;
+
+        outtakeMotor.setVelocity(outtakeTargetVelocity);
+        counterspinMotor.setVelocity(counterspinTargetVelocity);
     }
 
     public double getOuttakeTargetVelocity() {

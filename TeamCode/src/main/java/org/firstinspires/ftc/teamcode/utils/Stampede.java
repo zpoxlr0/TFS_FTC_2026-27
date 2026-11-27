@@ -223,6 +223,52 @@ public class Stampede {
     }
 
     /**
+     * Compute the distance the robot needs to travel from the current field position to a target
+     * position.
+     *
+     * @param xTargetPos    Target position in field coordinates (in inches)
+     * @param yTargetPos    Target position in field coordinates (in inches)
+     * @param headingTarget Target heading in field coordinates (in degrees)
+     * @return Distances to travel forward (in inches), right (in inches), and turn clockwise (in degrees)
+     */
+    public double[] getTravelValues(double xTargetPos, double yTargetPos, double headingTarget) {
+        double deltaX = xTargetPos - xFieldPos;
+        double deltaY = yTargetPos - yFieldPos;
+        double distance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+        double fieldBearing = Math.atan2(deltaY, deltaX);
+        double robotBearing = fieldBearing - Math.toRadians(headingField);
+        double forwardTravel = Math.cos(robotBearing) * distance;
+        double leftTravel = Math.sin(robotBearing) * distance;
+        //if rightTravel is positive go right and if leftTravel is positive go left
+        double rightTravel = -leftTravel;
+        double cwTurnAngle = headingField - headingTarget;
+        //to get angle between 0-360
+        cwTurnAngle = ((cwTurnAngle % 360) + 360) % 360;
+        //to turn the shortest possible distance
+        if (cwTurnAngle > 180) {
+            cwTurnAngle -= 360;
+        }
+        return new double[]{forwardTravel, rightTravel, cwTurnAngle};
+
+    }
+
+    /**
+     * @param angle1 (in degrees)
+     * @param angle2 (in degrees)
+     * @return angle 1 - angle 2 out of 360 (in degrees)
+     */
+    public double angleDifference(double angle1, double angle2) {
+        double angleDiff = angle1 - angle2;
+        //to get angle between 0-360
+        angleDiff = ((angleDiff % 360) + 360) % 360;
+        //to turn the shortest possible distance
+        if (angleDiff > 180) {
+            angleDiff -= 360;
+        }
+        return angleDiff;
+    }
+
+    /**
      * Zero calibration telemetry only.
      * Does not reset hardware encoders or change the field position.
      */
